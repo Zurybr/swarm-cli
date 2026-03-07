@@ -1,50 +1,144 @@
 # Swarm CLI
 
-> Convierte especificaciones en proyectos funcionales mediante agentes inteligentes
+> Transforma especificaciones (PRDs, tickets, tareas) en proyectos funcionales mediante orquestación inteligente de agentes
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22.0-brightgreen)](package.json)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](tsconfig.json)
 
-## 🎯 Objetivo
+---
 
-Swarm CLI es un sistema de orquestación de agentes que transforma especificaciones (PRDs, tareas, tickets) en implementaciones funcionales, gestionando el trabajo en lugar de supervisar agentes de codificación.
+## 🚀 ¿Qué es Swarm CLI?
+
+Swarm CLI es un sistema que **gestiona trabajo en lugar de supervisar agentes de codificación**. Convierte tus especificaciones (PRDs, tickets de Linear, archivos de tareas) en implementaciones funcionales mediante orquestación inteligente.
 
 Inspirado en [OpenAI Symphony](https://github.com/openai/symphony), DeerFlow, y las mejores prácticas de OpenClaw.
+
+### Flujo de Trabajo
+
+```
+Tu Spec (PRD.md) → Swarm CLI → GitHub Issues → Agentes → Código → Validación → Merge
+```
+
+---
+
+## 🛠️ Tecnologías
+
+### Core
+| Tecnología | Uso |
+|------------|-----|
+| **Node.js 22+** | Runtime principal |
+| **TypeScript 5.3** | Lenguaje tipado |
+| **Mastra** | Orquestación de agentes |
+| **Express.js** | API REST |
+| **WebSocket** | Updates en tiempo real |
+
+### Persistencia
+| Tecnología | Uso |
+|------------|-----|
+| **SQLite** | Datos relacionales (runs, tasks, agents) |
+| **sqlite-vec** | Embeddings vectoriales |
+| **Memgraph/Neo4j** | Relaciones entre entidades |
+
+### Integraciones
+| Tecnología | Uso |
+|------------|-----|
+| **GitHub CLI** | Sync issues, projects, worktrees |
+| **Octokit** | API GitHub |
+| **BGE-M3** | Embeddings por defecto |
+
+### Agentes Soportados
+- 🎭 **Orchestrator**: Coordina la ejecución
+- 📋 **Planner**: Descompone specs en tareas
+- 💻 **Coder**: Implementa código
+- 🧪 **Tester**: Genera y ejecuta tests
+- ✅ **Validator**: Verifica contra specs originales
+- 🔄 **Ralph**: Investigación profunda (ON/OFF)
+
+---
 
 ## 🏗️ Arquitectura
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  FRONTEND (Web UI)                                      │
+│  🎨 FRONTEND (Web UI)                                   │
 │  • Kanban view de GitHub Projects                       │
 │  • Dashboard de agentes en tiempo real                  │
 │  • Autenticación simple por token                       │
 ├─────────────────────────────────────────────────────────┤
-│  CLI DUAL                                               │
-│  • CLI/Humanos: Interfaz paso a paso conversacional     │
-│  • CLI/IA: JSON/YAML estructurado para automatización   │
+│  💻 CLI DUAL                                            │
+│  • Human Mode: Interfaz paso a paso conversacional      │
+│  • AI Mode: JSON/YAML estructurado para CI/CD           │
 ├─────────────────────────────────────────────────────────┤
-│  BACKEND (Fuente única de verdad)                       │
-│  • Orquestación Mastra + Symphony-style                 │
-│  • Sync bidireccional GitHub (issues, projects)         │
-│  • Git worktrees por tarea (aislamiento)                │
-│  • Validación automática sin intervención humana        │
-│  • Merge inteligente basado en specs                    │
-│  • Persistencia: SQLite + Vector + Graph                │
-└───────────────────────────────────────────────��────────┘
+│  🔧 BACKEND (Single Source of Truth)                    │
+│  • Mastra Orchestrator                                  │
+│  • GitHub Sync (Issues ↔ Tasks, Projects ↔ Kanban)      │
+│  • Git Worktrees (rama aislada por tarea)               │
+│  • Validación automática sin intervención               │
+│  • Smart Merge (resolución de conflictos por specs)     │
+└─────────────────────────────────────────────────────────┘
 ```
 
-## ✨ Características
+---
 
-- 🎯 **Specs → Código**: Convierte PRDs en proyectos funcionales
-- 🤖 **Agentes Especializados**: Orquestador, Planner, Coder, Tester, Validator
-- 🌳 **Git Worktrees**: Cada tarea = rama aislada no bloqueante
-- 📊 **GitHub Integration**: Issues y Projects sincronizados automáticamente
-- 🔄 **Ralph Loop**: Investigación profunda disponible ON/OFF
-- 🧠 **Memoria Híbrida**: ArsContexta (default) + Mem0 + Graphiti + Obsidian
-- 🔌 **Embeddings Configurables**: BGE-M3 (default) + OpenAI + Voyage + más
-- 🌐 **Multi-Provider**: Kimi, Anthropic, OpenAI, OpenRouter, etc.
-- 🧪 **Validación Automática**: Subagentes validan sin supervisión
+## 📖 Cómo Funciona
+
+### 1. Lectura de PRD
+
+Swarm CLI parsea archivos markdown con estructura específica:
+
+```markdown
+# Feature: Autenticación
+
+## Descripción
+Implementar login con JWT...
+
+## Tareas
+- [ ] Crear endpoint /login
+- [ ] Validar credenciales
+- [ ] Generar token JWT
+
+## Criterios de Aceptación
+- Login exitoso retorna token válido
+- Token expira en 24h
+```
+
+### 2. Generación Automática
+
+```bash
+# Swarm CLI convierte el PRD en:
+# 1. Issues de GitHub
+# 2. Tareas atómicas
+# 3. Git worktrees (ramas aisladas)
+# 4. Asignación a agentes especializados
+
+swarm-cli init --github owner/repo --specs feature/auth.md
+```
+
+### 3. Orquestación
+
+```
+Spec parseado
+    ↓
+Tasks atómicos creados
+    ↓
+[Paralelo] → Agentes simultáneos
+[Secuencial] → Uno tras otro
+    ↓
+Validación automática (subagentes)
+    ↓
+Smart merge (basado en specs)
+    ↓
+PR listo para review
+```
+
+### 4. Memoria y Contexto
+
+- **Progresivo**: Empieza con contexto limitado, expande según necesidad
+- **Persistente**: SQLite + Vector + Graph mantienen estado entre runs
+- **Configurable**: ArsContexta (default), Mem0, Graphiti, Obsidian
+
+---
 
 ## 🚀 Instalación
 
@@ -52,35 +146,146 @@ Inspirado en [OpenAI Symphony](https://github.com/openai/symphony), DeerFlow, y 
 # Global install
 npm install -g swarm-cli
 
-# O usar npx
+# Verificar instalación
+swarm-cli --version
+
+# O usar sin instalar
 npx swarm-cli
 ```
 
-## 📖 Uso Rápido
+---
+
+## 📚 Uso
+
+### Inicializar Proyecto
 
 ```bash
-# Inicializar proyecto
-swarm-cli init --github owner/repo --specs specs.md
+# Desde un repositorio existente
+cd mi-proyecto
+swarm-cli init --github owner/repo --specs specs/
 
-# Crear tarea desde spec
-swarm-cli task create --spec "feature/auth.md" --depth 3
-
-# Ver estado
-swarm-cli status
-
-# Modo interactivo
-swarm-cli
+# Swarm CLI creará:
+# - Issues de GitHub desde tus specs
+# - GitHub Project con Kanban
+# - Configuración local (.swarmrc.yml)
 ```
 
-## 📚 Documentación
+### Crear Tarea desde Spec
+
+```bash
+# Crear tarea especificando profundidad
+swarm-cli task create --spec "feature/auth.md" --depth 3
+
+# Depth levels:
+# 1: Overview only
+# 2: Include subtasks
+# 3: Full implementation details + tests
+```
+
+### Ver Estado
+
+```bash
+# Dashboard en terminal
+swarm-cli status
+
+# Ver runs activos
+swarm-cli run list
+
+# Ver logs de un run específico
+swarm-cli run logs --id run-abc123
+```
+
+### Modo Interactivo
+
+```bash
+# Modo conversacional para humanos
+swarm-cli interactive
+
+# O modo AI para automatización
+swarm-cli ai --config pipeline.yml
+```
+
+---
+
+## 🤝 Cómo Contribuir
+
+¡Gracias por tu interés en contribuir a Swarm CLI!
+
+### Prerrequisitos
+
+- Node.js >= 22.0
+- npm o yarn
+- GitHub CLI (`gh`) autenticado
+- Cuenta de GitHub
+
+### Setup de Desarrollo
+
+```bash
+# 1. Fork y clone
+git clone https://github.com/tu-usuario/swarm-cli.git
+cd swarm-cli
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Configurar entorno
+cp .env.example .env
+# Editar .env con tus credenciales
+
+# 4. Ejecutar tests
+npm test
+
+# 5. Iniciar en modo desarrollo
+npm run dev
+```
+
+### Estructura de Contribuciones
+
+```
+src/
+├── backend/      # Core del sistema
+├── cli/          # Interfaz de línea de comandos
+├── frontend/     # Web UI
+└── shared/       # Utilidades compartidas
+```
+
+### Guías de Contribución
+
+1. **Crear un issue primero**: Describe el bug o feature
+2. **Fork + Branch**: `git checkout -b feature/nueva-funcionalidad`
+3. **Commits descriptivos**: Seguimos [Conventional Commits](https://www.conventionalcommits.org/)
+4. **Tests obligatorios**: Toda nueva funcionalidad debe incluir tests
+5. **Documentación**: Actualizar README.md si es necesario
+6. **PR**: Crear pull request con descripción clara
+
+### Reportar Bugs
+
+Usa GitHub Issues con este formato:
+
+```markdown
+**Descripción**: Breve descripción del problema
+**Pasos para reproducir**:
+1. Paso 1
+2. Paso 2
+**Comportamiento esperado**: Qué debería pasar
+**Comportamiento actual**: Qué pasa realmente
+**Entorno**: Node version, OS, etc.
+```
+
+### Roadmap
+
+Ver [ROADMAP.md](ROADMAP.md) para features planificados.
+
+---
+
+## 📚 Documentación Adicional
 
 - [Arquitectura Backend](docs/architecture/backend.md)
+- [Diagramas (Excalidraw)](docs/architecture/diagrams/)
 - [Plan de Implementación](docs/plans/)
 - [API Reference](docs/api.md)
 
-## 🤝 Contribuir
-
-Ver [CONTRIBUTING.md](CONTRIBUTING.md)
+---
 
 ## 📄 Licencia
 
