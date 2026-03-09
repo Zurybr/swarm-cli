@@ -11,7 +11,7 @@
 | Phase | Name | Requirements | Est. Duration |
 |-------|------|--------------|---------------|
 | 1 | Foundation | Complete    | 2026-03-09 |
-| 2 | Skill Registry | REQ-01 | 2-3 days |
+| 2 | 2/3 | In Progress|  |
 | 3 | Composable Builder | REQ-02 | 2-3 days |
 | 4 | Domain Expert Agents | REQ-03 | 3-4 days |
 | 5 | Orchestration Patterns | REQ-05 | 2-3 days |
@@ -54,21 +54,23 @@
 - REQ-01: Agent skill registry
 
 **Plans:**
-3 plans planned
-- [ ] 02-01-PLAN.md — Core types, schemas, and SQLite persistence (Wave 1)
-- [ ] 02-02-PLAN.md — FTS5 search, version management, and SkillRegistry class (Wave 2)
+2/3 plans executed
+- [x] 02-01-PLAN.md — Core types, schemas, and SQLite persistence (Wave 1) — Complete
+- [x] 02-02-PLAN.md — FTS5 search, version management, and SkillRegistry class (Wave 2) — Complete
 - [ ] 02-03-PLAN.md — CLI commands and public API exports (Wave 3)
 
 **Key Deliverables:**
-- `SkillRegistry` class with CRUD operations
-- Skill metadata schema (name, description, schema, version)
-- SQLite persistence integration
-- CLI commands: `skill register`, `skill list`, `skill search`
+- `SkillRegistry` class with CRUD operations — Complete
+- Skill metadata schema (name, description, schema, version) — Complete
+- SQLite persistence integration — Complete
+- FTS5 full-text search — Complete
+- Semantic version management — Complete
+- CLI commands: `skill register`, `skill list`, `skill search` — Pending (02-03)
 
 **Success Criteria:**
-- Can register a skill and retrieve it by name
-- Skills persist across process restarts
-- Search returns relevant skills by description
+- Can register a skill and retrieve it by name — Complete
+- Skills persist across process restarts — Complete
+- Search returns relevant skills by description — Complete
 
 **Depends On:** Phase 1
 
@@ -202,8 +204,8 @@
 
 ## Next Steps
 
-1. **Phase 2** → `/gsd:execute-phase 02`
-2. Execute plans in wave order: 02-01 (Wave 1) → 02-02 (Wave 2) → 02-03 (Wave 3)
+1. **Phase 2** → Continue with 02-03 → `/gsd:execute-phase 02`
+2. Execute remaining plan: 02-03 (Wave 3) — CLI commands and public API exports
 
 ---
 
