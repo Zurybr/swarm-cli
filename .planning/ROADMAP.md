@@ -1,7 +1,7 @@
 # Roadmap: New Agent Capabilities
 
 **Version:** 1.0
-**Status:** Phase 1 Complete (4/4 plans complete), Phase 2 Planned (3/3 plans)
+**Status:** Phase 1 Complete (4/4 plans complete), Phase 2 Complete (3/3 plans)
 **Created:** 2026-03-09
 
 ---
@@ -11,7 +11,7 @@
 | Phase | Name | Requirements | Est. Duration |
 |-------|------|--------------|---------------|
 | 1 | Foundation | Complete    | 2026-03-09 |
-| 2 | 2/3 | In Progress|  |
+| 2 | Complete | Complete | 2026-03-09 |
 | 3 | Composable Builder | REQ-02 | 2-3 days |
 | 4 | Domain Expert Agents | REQ-03 | 3-4 days |
 | 5 | Orchestration Patterns | REQ-05 | 2-3 days |
@@ -54,10 +54,10 @@
 - REQ-01: Agent skill registry
 
 **Plans:**
-2/3 plans executed
+3/3 plans executed
 - [x] 02-01-PLAN.md — Core types, schemas, and SQLite persistence (Wave 1) — Complete
 - [x] 02-02-PLAN.md — FTS5 search, version management, and SkillRegistry class (Wave 2) — Complete
-- [ ] 02-03-PLAN.md — CLI commands and public API exports (Wave 3)
+- [x] 02-03-PLAN.md — CLI commands and public API exports (Wave 3) — Complete
 
 **Key Deliverables:**
 - `SkillRegistry` class with CRUD operations — Complete
@@ -65,7 +65,7 @@
 - SQLite persistence integration — Complete
 - FTS5 full-text search — Complete
 - Semantic version management — Complete
-- CLI commands: `skill register`, `skill list`, `skill search` — Pending (02-03)
+- CLI commands: `skill register`, `skill list`, `skill search`, `skill get` — Complete
 
 **Success Criteria:**
 - Can register a skill and retrieve it by name — Complete
@@ -204,8 +204,8 @@
 
 ## Next Steps
 
-1. **Phase 2** → Continue with 02-03 → `/gsd:execute-phase 02`
-2. Execute remaining plan: 02-03 (Wave 3) — CLI commands and public API exports
+1. **Phase 3** → Plan composable agent builder → `/gsd:plan-phase 03`
+2. Phase 2 complete: Skill registry with CLI commands, FTS5 search, and semantic versioning
 
 ---
 
