@@ -127,9 +127,13 @@ export class SkillTestHarness<TSkill, TInput, TOutput> {
     // Run guardrails if configured
     if (this.guardrails.length > 0) {
       const context = this.createGuardrailContext();
+      // Convert input to string for guardrail validation
+      const inputForGuardrail = typeof input === 'string'
+        ? input
+        : JSON.stringify(input);
 
       for (const guardrail of this.guardrails) {
-        const result = await guardrail.execute(input, context);
+        const result = await guardrail.execute(inputForGuardrail, context);
         guardrailResults.push(result);
 
         if (result.blocked) {
