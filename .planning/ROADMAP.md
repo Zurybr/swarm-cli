@@ -28,6 +28,12 @@
 **Requirements:**
 - REQ-04: Agent testing framework (foundations)
 
+**Plans:**
+- [ ] 01-01-PLAN.md — Jest configuration and test setup
+- [ ] 01-02-PLAN.md — Mock LLM client and fixtures
+- [ ] 01-03-PLAN.md — Security guardrails base class and implementations
+- [ ] 01-04-PLAN.md — Test harnesses and integration
+
 **Key Deliverables:**
 - Deterministic test mode for skills
 - Mock LLM response fixtures
@@ -190,7 +196,7 @@
 
 ## Next Steps
 
-1. **Phase 1** → `/gsd:plan-phase 1`
+1. **Phase 1** → `/gsd:execute-phase 1`
 2. Execute phases sequentially (dependencies enforced)
 
 ---
