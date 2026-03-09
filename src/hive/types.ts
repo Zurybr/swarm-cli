@@ -97,6 +97,7 @@ export interface UpdateCellOptions {
   title?: string;
   description?: string;
   status?: CellStatus;
+  parentId?: string;
   priority?: number;
   metadata?: Record<string, unknown>;
   tags?: string[];

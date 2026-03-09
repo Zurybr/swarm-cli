@@ -279,11 +279,14 @@ export class Cell {
   /**
    * Check if this cell is a descendant of another cell
    */
-  isDescendantOf(parentId: string, getCellFn: (id: string) => Cell | undefined): boolean {
+  async isDescendantOf(
+    parentId: string,
+    getCellFn: (id: string) => Promise<Cell | undefined> | Cell | undefined
+  ): Promise<boolean> {
     if (!this.data.parentId) return false;
     if (this.data.parentId === parentId) return true;
 
-    const parent = getCellFn(this.data.parentId);
+    const parent = await getCellFn(this.data.parentId);
     if (!parent) return false;
 
     return parent.isDescendantOf(parentId, getCellFn);
