@@ -28,7 +28,7 @@ export class ComposedAgent extends BaseAgent {
   private compositionConfig: CompositionConfig;
   private skillRegistry: SkillRegistry;
   private chainExecutor: SkillChainExecutor;
-  private logger: Logger;
+  protected composedLogger: Logger;
 
   /**
    * Create a new ComposedAgent
@@ -44,7 +44,7 @@ export class ComposedAgent extends BaseAgent {
     super(config);
     this.compositionConfig = compositionConfig;
     this.skillRegistry = skillRegistry;
-    this.logger = new Logger(`ComposedAgent:${config.role}`);
+    this.composedLogger = new Logger(`ComposedAgent:${config.role}`);
 
     const chain = new SkillChain(compositionConfig.skills, compositionConfig);
     this.chainExecutor = new SkillChainExecutor(
@@ -76,7 +76,7 @@ export class ComposedAgent extends BaseAgent {
       return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error('ComposedAgent execution failed', { error: errorMessage });
+      this.composedLogger.error('ComposedAgent execution failed', { error: errorMessage });
 
       const errorResult: AgentResult = {
         success: false,
