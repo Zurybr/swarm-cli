@@ -69,3 +69,19 @@ export type {
 export {
   GuardrailBlockedError
 } from '../security/base-guardrail';
+
+// Re-export concrete guardrails for convenience
+export {
+  PromptInjectionGuardrail
+} from '../security/prompt-injection';
+
+export {
+  ContentSafetyGuardrail,
+  ContentCategory,
+  ModerationApi
+} from '../security/content-safety';
+
+export {
+  CompositeGuardrail,
+  CompositeMode
+} from '../security/composite-guardrail';
