@@ -51,10 +51,10 @@
 **Description:** Testing utilities for agent behaviors
 
 **Acceptance Criteria:**
-- [ ] Deterministic test mode for agent skills (mocked LLM responses)
+- [x] Deterministic test mode for agent skills (mocked LLM responses)
 - [ ] Evaluation harness for agent outputs (LLM-as-a-Judge pattern)
-- [ ] Test fixtures for common agent scenarios
-- [ ] Integration with existing Jest setup
+- [x] Test fixtures for common agent scenarios
+- [x] Integration with existing Jest setup
 
 **From Research:** Non-determinism requires simulation-based testing approaches
 
