@@ -1,7 +1,7 @@
 # Roadmap: New Agent Capabilities
 
 **Version:** 1.0
-**Status:** Phase 1 Complete (4/4 plans complete), Phase 2 Complete (3/3 plans)
+**Status:** Phase 1 Complete (4/4 plans complete), Phase 2 Complete (3/3), Phase 3 Planned (3/3)
 **Created:** 2026-03-09
 
 ---
@@ -83,6 +83,12 @@
 
 **Requirements:**
 - REQ-02: Composable agent builder
+
+**Plans:**
+3/3 plans planned, ready for execution
+- [ ] 03-01-PLAN.md — AgentBuilder fluent API and schema validation (Wave 1)
+- [ ] 03-02-PLAN.md — ComposedAgent class and orchestrator integration (Wave 2)
+- [ ] 03-03-PLAN.md — CLI commands and integration tests (Wave 3)
 
 **Key Deliverables:**
 - `AgentBuilder` fluent API
@@ -204,8 +210,9 @@
 
 ## Next Steps
 
-1. **Phase 3** → Plan composable agent builder → `/gsd:plan-phase 03`
+1. **Phase 3** → Execute composable agent builder plans → `/gsd:execute-phase 03`
 2. Phase 2 complete: Skill registry with CLI commands, FTS5 search, and semantic versioning
+3. Phase 3 planned: 3 plans in 3 waves covering AgentBuilder, ComposedAgent, and CLI integration
 
 ---
 
