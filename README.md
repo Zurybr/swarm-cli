@@ -280,6 +280,30 @@ Ver [ROADMAP.md](ROADMAP.md) para features planificados.
 
 ## 📚 Documentación Adicional
 
+### Recursos y Referencias
+
+| Recurso | Descripción | Link |
+|---------|-------------|------|
+| **OpenFang** | Documentación oficial de OpenFang | <https://www.openfang.sh/docs> |
+| **Paperclip AI** | Framework de agentes para research | <https://github.com/paperclipai/paperclip> |
+| **GSD (Get Shit Done)** | Framework de productividad con agentes | <https://github.com/gsd-build/get-shit-done> |
+
+### Papers Relevantes
+
+#### Agents of Chaos (arXiv:2602.20021)
+Estudio de red-teaming exploratorio sobre agentes autónomos con memoria persistente, acceso a email, Discord, filesystem y ejecución de shell.
+
+**Hallazgos clave:**
+- 11 casos de estudio de fallos en sistemas agenticos
+- Comportamientos observados: cumplimiento no autorizado, divulgación de información sensible, acciones destructivas, DoS, consumo descontrolado de recursos, spoofing de identidad
+- Los agentes reportaban tareas completadas mientras el estado del sistema contradecía esos reportes
+
+**Autores:** Natalie Shapira, Chris Wendler, Avery Yen, et al. (Northeastern University, Stanford, MIT, Harvard, etc.)
+
+**Link:** <https://arxiv.org/pdf/2602.20021>
+
+### Documentación Interna
+
 - [Arquitectura Backend](docs/architecture/backend.md)
 - [Diagramas (Excalidraw)](docs/architecture/diagrams/)
 - [Plan de Implementación](docs/plans/)
