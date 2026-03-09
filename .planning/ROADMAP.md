@@ -1,7 +1,7 @@
 # Roadmap: New Agent Capabilities
 
 **Version:** 1.0
-**Status:** Phase 1 Complete (4/4 plans complete)
+**Status:** Phase 1 Complete (4/4 plans complete), Phase 2 Planned (3/3 plans)
 **Created:** 2026-03-09
 
 ---
@@ -10,7 +10,7 @@
 
 | Phase | Name | Requirements | Est. Duration |
 |-------|------|--------------|---------------|
-| 1 | Foundation | REQ-04 (partial) | 1-2 days |
+| 1 | Foundation | Complete    | 2026-03-09 |
 | 2 | Skill Registry | REQ-01 | 2-3 days |
 | 3 | Composable Builder | REQ-02 | 2-3 days |
 | 4 | Domain Expert Agents | REQ-03 | 3-4 days |
@@ -29,7 +29,7 @@
 - REQ-04: Agent testing framework (foundations)
 
 **Plans:**
-- [x] 01-01-PLAN.md — Jest configuration and test setup (Complete)
+4/4 plans complete
 - [x] 01-02-PLAN.md — Mock LLM client and fixtures (Complete)
 - [x] 01-03-PLAN.md — Security guardrails base class and implementations (Complete)
 - [x] 01-04-PLAN.md — Test harnesses and integration (Complete)
@@ -52,6 +52,12 @@
 
 **Requirements:**
 - REQ-01: Agent skill registry
+
+**Plans:**
+3 plans planned
+- [ ] 02-01-PLAN.md — Core types, schemas, and SQLite persistence (Wave 1)
+- [ ] 02-02-PLAN.md — FTS5 search, version management, and SkillRegistry class (Wave 2)
+- [ ] 02-03-PLAN.md — CLI commands and public API exports (Wave 3)
 
 **Key Deliverables:**
 - `SkillRegistry` class with CRUD operations
@@ -196,8 +202,8 @@
 
 ## Next Steps
 
-1. **Phase 1** → `/gsd:execute-phase 1`
-2. Execute phases sequentially (dependencies enforced)
+1. **Phase 2** → `/gsd:execute-phase 02`
+2. Execute plans in wave order: 02-01 (Wave 1) → 02-02 (Wave 2) → 02-03 (Wave 3)
 
 ---
 
