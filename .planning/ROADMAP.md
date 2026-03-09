@@ -1,7 +1,7 @@
 # Roadmap: New Agent Capabilities
 
 **Version:** 1.0
-**Status:** Planning Complete
+**Status:** Phase 1 In Progress (1/4 plans complete)
 **Created:** 2026-03-09
 
 ---
@@ -29,7 +29,7 @@
 - REQ-04: Agent testing framework (foundations)
 
 **Plans:**
-- [ ] 01-01-PLAN.md — Jest configuration and test setup
+- [x] 01-01-PLAN.md — Jest configuration and test setup (Complete)
 - [ ] 01-02-PLAN.md — Mock LLM client and fixtures
 - [ ] 01-03-PLAN.md — Security guardrails base class and implementations
 - [ ] 01-04-PLAN.md — Test harnesses and integration
