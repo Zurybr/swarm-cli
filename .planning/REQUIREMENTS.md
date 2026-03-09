@@ -25,9 +25,9 @@
 **Description:** Build agents by composing skills from the registry
 
 **Acceptance Criteria:**
-- [ ] Agents can be defined as composition of 1+ skills
-- [ ] Skill composition validates input/output compatibility
-- [ ] Agents can be instantiated with specific skill configurations
+- [x] Agents can be defined as composition of 1+ skills
+- [x] Skill composition validates input/output compatibility
+- [x] Agents can be instantiated with specific skill configurations
 - [ ] Composed agents integrate with existing `BaseAgent` class
 
 **From Research:** Fractal composition pattern — agents as graphs of skills

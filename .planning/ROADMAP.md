@@ -12,7 +12,7 @@
 |-------|------|--------------|---------------|
 | 1 | Foundation | Complete    | 2026-03-09 |
 | 2 | Complete | Complete | 2026-03-09 |
-| 3 | Composable Builder | REQ-02 | 2-3 days |
+| 3 | 0/3 | Planned    |  |
 | 4 | Domain Expert Agents | REQ-03 | 3-4 days |
 | 5 | Orchestration Patterns | REQ-05 | 2-3 days |
 | 6 | Conflict Detection | REQ-06 | 2-3 days |
@@ -85,14 +85,14 @@
 - REQ-02: Composable agent builder
 
 **Plans:**
-3/3 plans planned, ready for execution
-- [ ] 03-01-PLAN.md — AgentBuilder fluent API and schema validation (Wave 1)
+1/3 plans executed
+- [x] 03-01-PLAN.md — AgentBuilder fluent API and schema validation (Wave 1) — Complete
 - [ ] 03-02-PLAN.md — ComposedAgent class and orchestrator integration (Wave 2)
 - [ ] 03-03-PLAN.md — CLI commands and integration tests (Wave 3)
 
 **Key Deliverables:**
-- `AgentBuilder` fluent API
-- Input/output compatibility validation
+- `AgentBuilder` fluent API — Complete
+- Input/output compatibility validation — Complete
 - Integration with existing `BaseAgent`
 - CLI command: `agent build`
 
