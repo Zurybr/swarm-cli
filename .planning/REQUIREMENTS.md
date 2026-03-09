@@ -12,10 +12,10 @@
 **Description:** Dynamic registration and discovery of agent capabilities
 
 **Acceptance Criteria:**
-- [ ] Skills can be registered at runtime with metadata (name, description, input/output schema)
-- [ ] Registry supports versioned skill definitions
+- [x] Skills can be registered at runtime with metadata (name, description, input/output schema)
+- [x] Registry supports versioned skill definitions
 - [ ] Skills can be discovered via semantic search or category browsing
-- [ ] Registry persists to existing SQLite backend
+- [x] Registry persists to existing SQLite backend
 
 **From Research:** Pattern from LangGraph/AG2 — central registry with metadata enables dynamic agent composition
 
