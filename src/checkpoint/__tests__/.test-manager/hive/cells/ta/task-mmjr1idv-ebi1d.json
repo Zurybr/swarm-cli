@@ -1,12 +1,18 @@
 {
   "id": "task-mmjr1idv-ebi1d",
   "title": "Test Task",
-  "status": "in_progress",
+  "status": "completed",
   "type": "task",
   "priority": 0,
   "createdAt": "2026-03-09T22:24:58.963Z",
-  "updatedAt": "2026-03-09T22:24:58.963Z",
-  "history": [],
+  "updatedAt": "2026-03-09T22:24:59.034Z",
+  "history": [
+    {
+      "timestamp": "2026-03-09T22:24:59.034Z",
+      "from": "in_progress",
+      "to": "completed"
+    }
+  ],
   "metadata": {},
   "tags": [],
   "children": []
