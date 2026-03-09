@@ -7,9 +7,41 @@ import { createAPIServer } from '../backend/api/server';
 import { orchestrator } from '../backend/orchestrator-instance';
 import { AGENCY_AGENTS, getAllAgentIds } from '../agents/definitions/agency-agents';
 import { Logger } from '../utils/logger';
+import { createPlanCommand } from '../plan/cli';
+import { registerSkillCommands } from './commands/skill-commands';
+import { SkillRegistry } from '../skills';
+import sqlite3 from 'sqlite3';
 
 const logger = new Logger('CLI');
 const program = new Command();
+
+// Initialize skill registry
+let skillRegistry: SkillRegistry | null = null;
+
+async function initializeSkillRegistry(): Promise<SkillRegistry> {
+  if (!skillRegistry) {
+    // Use a default database path or get from environment/config
+    const dbPath = process.env.SWARM_DB_PATH || './swarm.db';
+    const db = new sqlite3.Database(dbPath);
+    skillRegistry = new SkillRegistry(db);
+    await skillRegistry.initialize();
+
+    // Close database on process exit
+    process.on('exit', () => {
+      db.close((err) => {
+        if (err) logger.error('Error closing database', err);
+      });
+    });
+
+    process.on('SIGINT', () => {
+      db.close((err) => {
+        if (err) logger.error('Error closing database', err);
+        process.exit(0);
+      });
+    });
+  }
+  return skillRegistry;
+}
 
 program
   .name('swarm-cli')
@@ -139,6 +171,20 @@ program
     console.log('Agent stats - TODO');
   });
 
+// Plan commands
+program.addCommand(createPlanCommand());
+
+// Skill commands - initialized asynchronously
+(async () => {
+  try {
+    const registry = await initializeSkillRegistry();
+    registerSkillCommands(program, registry);
+  } catch (error) {
+    logger.error('Failed to initialize skill registry', error);
+    // Continue without skill commands - they won't be available
+  }
+})();
+
 // Config commands
 program
   .command('config:ralph')
@@ -148,24 +194,24 @@ program
   .option('--max-iterations <n>', 'Máximo de iteraciones')
   .action((options) => {
     const config = orchestrator.getConfig();
-    
+
     if (options.enable) {
       orchestrator.updateConfig({ ralphLoopEnabled: true });
       console.log('✅ Ralph loop habilitado');
     }
-    
+
     if (options.disable) {
       orchestrator.updateConfig({ ralphLoopEnabled: false });
       console.log('❌ Ralph loop deshabilitado');
     }
-    
+
     if (options.maxIterations) {
-      orchestrator.updateConfig({ 
-        ralphMaxIterations: parseInt(options.maxIterations, 10) 
+      orchestrator.updateConfig({
+        ralphMaxIterations: parseInt(options.maxIterations, 10)
       });
       console.log(`📊 Max iteraciones: ${options.maxIterations}`);
     }
-    
+
     // Show current config
     const current = orchestrator.getConfig();
     console.log('\nConfiguración actual:');
