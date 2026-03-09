@@ -9,7 +9,13 @@ import { AGENCY_AGENTS, getAllAgentIds } from '../agents/definitions/agency-agen
 import { Logger } from '../utils/logger';
 import { createPlanCommand } from '../plan/cli';
 import { registerSkillCommands } from './commands/skill-commands';
+import { registerAgentCommands } from './commands/agent-commands';
 import { SkillRegistry } from '../skills';
+import { createAgentsCommand } from '../agents/cli';
+import { registerVerificationCommands } from '../verification/cli';
+import { createStateCommand } from '../state/cli';
+import { createWaveCommand } from '../wave/cli';
+import { createContextCommand } from '../context/cli';
 import sqlite3 from 'sqlite3';
 
 const logger = new Logger('CLI');
@@ -174,11 +180,28 @@ program
 // Plan commands
 program.addCommand(createPlanCommand());
 
-// Skill commands - initialized asynchronously
+// Agents commands
+program.addCommand(createAgentsCommand());
+
+// Verification commands
+registerVerificationCommands(program);
+
+// State commands
+program.addCommand(createStateCommand());
+
+// Wave execution commands
+program.addCommand(createWaveCommand());
+
+// Context engineering commands
+program.addCommand(createContextCommand());
+
+// Skill and agent commands - initialized asynchronously
 (async () => {
   try {
     const registry = await initializeSkillRegistry();
     registerSkillCommands(program, registry);
+    // Register agent commands after skill commands (dependency order)
+    registerAgentCommands(program, registry);
   } catch (error) {
     logger.error('Failed to initialize skill registry', error);
     // Continue without skill commands - they won't be available
