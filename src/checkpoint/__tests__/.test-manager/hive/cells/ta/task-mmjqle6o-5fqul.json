@@ -1,12 +1,18 @@
 {
   "id": "task-mmjqle6o-5fqul",
   "title": "Test Task",
-  "status": "in_progress",
+  "status": "completed",
   "type": "task",
   "priority": 0,
   "createdAt": "2026-03-09T22:12:27.024Z",
-  "updatedAt": "2026-03-09T22:12:27.024Z",
-  "history": [],
+  "updatedAt": "2026-03-09T22:12:27.122Z",
+  "history": [
+    {
+      "timestamp": "2026-03-09T22:12:27.123Z",
+      "from": "in_progress",
+      "to": "completed"
+    }
+  ],
   "metadata": {},
   "tags": [],
   "children": []
