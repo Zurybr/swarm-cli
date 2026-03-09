@@ -106,16 +106,6 @@ export class RecoveryManager {
       };
     }
 
-    // Debug: Check backup file content
-    for (const [path, backupPath] of Object.entries(snapshot.backupPaths)) {
-      if (fs.existsSync(backupPath)) {
-        const content = fs.readFileSync(backupPath, 'utf-8');
-        console.log(`DEBUG: Backup for ${path} contains: ${content}`);
-      } else {
-        console.log(`DEBUG: Backup for ${path} does not exist at ${backupPath}`);
-      }
-    }
-
     const restoredFiles: string[] = [];
 
     try {

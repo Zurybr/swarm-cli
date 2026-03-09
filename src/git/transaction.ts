@@ -245,8 +245,10 @@ export class TransactionManager {
       };
     }
 
-    // Create snapshot for potential rollback
-    this.recoveryManager.createSnapshot(transaction);
+    // Create snapshot for potential rollback (if not already exists)
+    if (!this.recoveryManager.hasSnapshot(transactionId)) {
+      this.recoveryManager.createSnapshot(transaction);
+    }
 
     try {
       transaction.status = 'committing';
