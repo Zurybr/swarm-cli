@@ -1,3 +1,12 @@
+# Docker
+.docker/
+
+# Datos locales
+data/
+logs/
+
+# Environment
+.env
 node_modules/
 dist/
 *.log

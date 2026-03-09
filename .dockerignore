@@ -1,0 +1,55 @@
+# Dependencias
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Directorios de build
+dist
+build
+coverage
+.nyc_output
+
+# Datos y logs (se montan como volúmenes)
+data
+logs
+*.db
+*.sqlite
+*.sqlite3
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Env files (excepto los que queremos copiar)
+.env.local
+.env.*.local
+!.env.example
+
+# Tests (opcional, puedes comentar si quieres ejecutar tests en el contenedor)
+tests
+test
+__tests__
+*.test.ts
+*.spec.ts
+
+# Documentación (no necesaria para desarrollo)
+docs
+*.md
+!README.md
