@@ -44,3 +44,28 @@ export {
   GeneralFixtures,
   createSecurityFixture
 } from './fixtures/llm-responses';
+
+// Test harnesses
+export {
+  SkillTestHarness,
+  SkillExecutionResult,
+  SkillTestAssertionError
+} from './skill-test-harness';
+
+export {
+  AgentTestHarness,
+  AgentExecutionResult,
+  AgentTestAssertionError
+} from './agent-test-harness';
+
+// Re-export from security for convenience
+export type {
+  BaseGuardrail,
+  GuardrailContext,
+  GuardrailResult,
+  GuardrailSeverity
+} from '../security/base-guardrail';
+
+export {
+  GuardrailBlockedError
+} from '../security/base-guardrail';
