@@ -1,7 +1,7 @@
 # Roadmap: New Agent Capabilities
 
 **Version:** 1.0
-**Status:** Phase 1 In Progress (3/4 plans complete)
+**Status:** Phase 1 Complete (4/4 plans complete)
 **Created:** 2026-03-09
 
 ---
@@ -32,7 +32,7 @@
 - [x] 01-01-PLAN.md — Jest configuration and test setup (Complete)
 - [x] 01-02-PLAN.md — Mock LLM client and fixtures (Complete)
 - [x] 01-03-PLAN.md — Security guardrails base class and implementations (Complete)
-- [ ] 01-04-PLAN.md — Test harnesses and integration
+- [x] 01-04-PLAN.md — Test harnesses and integration (Complete)
 
 **Key Deliverables:**
 - Deterministic test mode for skills

@@ -1,10 +1,10 @@
 # Project State: Swarm CLI
 
 **Current Phase:** 01-foundation
-**Current Plan:** 01-03
+**Current Plan:** 01-04
 **Plan Status:** Complete
 **Last Updated:** 2026-03-09
-**Last Session:** Completed 01-03-PLAN.md
+**Last Session:** Completed 01-04-PLAN.md
 
 ---
 
@@ -26,7 +26,7 @@ Extension to existing Swarm CLI with new agent capabilities — a composable ski
 
 **Milestone:** v1.0 Foundation
 **Phase:** 01-foundation
-**Active Plans:** 01-01 Complete, 01-02 Complete, 01-03 Complete
+**Active Plans:** 01-01 Complete, 01-02 Complete, 01-03 Complete, 01-04 Complete
 
 ---
 
@@ -42,6 +42,7 @@ Extension to existing Swarm CLI with new agent capabilities — a composable ski
 | 01-01 Summary | 4e8aa10 | Jest testing infrastructure with TypeScript |
 | 01-02 Summary | bec7727 | Mock LLM client with fixtures (31 tests) |
 | 01-03 Summary | 554cb15 | Security guardrails with 41 tests |
+| 01-04 Summary | 7ae5b41 | Test harnesses with guardrail integration (117 tests) |
 
 ---
 
@@ -61,10 +62,11 @@ Extension to existing Swarm CLI with new agent capabilities — a composable ski
 
 ## Next Action
 
-Phase 01-foundation is complete with 3 plans finished:
+Phase 01-foundation is complete with 4 plans finished:
 - 01-01: Jest testing infrastructure
 - 01-02: Mock LLM client with fixtures
 - 01-03: Security guardrails
+- 01-04: Test harnesses with guardrail integration
 
 Ready to move to Phase 02: Agent Skill Registry (REQ-01).
 
@@ -74,14 +76,15 @@ Run: `/gsd:plan-phase 02` to begin planning Phase 2.
 
 ## Session Continuity
 
-**Last Work:** Completed 01-03 Security guardrails for agent operations
-- Created BaseGuardrail abstract class with fail-closed behavior
-- Implemented PromptInjectionGuardrail with 14 detection patterns
-- Implemented ContentSafetyGuardrail with rule-based moderation
-- Created CompositeGuardrail for defense-in-depth orchestration
-- Added 41 comprehensive unit tests for all guardrail types
-- Full test suite: 72 tests passing
-**Context Files:** ROADMAP.md, REQUIREMENTS.md, 01-03-SUMMARY.md
+**Last Work:** Completed 01-04 Test harnesses for agent skills
+- Created SkillTestHarness with fluent API (givenLLMResponse, withGuardrail, whenSkillExecutes)
+- Created AgentTestHarness for full BaseAgent testing with state inspection
+- Integrated MockLLMClient with security guardrails for comprehensive testing
+- Added 21 unit tests for SkillTestHarness functionality
+- Added 14 integration tests for guardrail-agent integration
+- Created example test file with 10 tests as living documentation
+- Full test suite: 117 tests passing
+**Context Files:** ROADMAP.md, REQUIREMENTS.md, 01-04-SUMMARY.md
 **Open Decisions:** None
 
 ---
