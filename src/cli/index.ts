@@ -264,7 +264,10 @@ program
     
     // API Status
     try {
-      await fetch('http://localhost:3000/health');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 2000);
+      await fetch('http://localhost:3000/health', { signal: controller.signal });
+      clearTimeout(timeout);
       console.log('🟢 API: Online');
     } catch {
       console.log('🔴 API: Offline (run `swarm-cli server` to start)');
@@ -309,14 +312,29 @@ program
       console.log('⚪ Storage: No disponible');
     }
     
-    // Runs
+    // Runs - Skip if API is offline to avoid hanging
+    let apiOnline = false;
     try {
-      const runs = orchestrator.getAllRuns();
-      const running = runs.filter((r: { status: string }) => r.status === 'executing').length;
-      const failed = runs.filter((r: { status: string }) => r.status === 'failed').length;
-      console.log(`🚀 Runs: ${runs.length} total (${running} ejecutando, ${failed} failed)`);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 500);
+      await fetch('http://localhost:3000/health', { signal: controller.signal });
+      clearTimeout(timeout);
+      apiOnline = true;
     } catch {
-      console.log('⚪ Runs: No disponible');
+      // API offline
+    }
+    
+    if (apiOnline) {
+      try {
+        const runs = orchestrator.getAllRuns();
+        const running = runs.filter((r: { status: string }) => r.status === 'executing').length;
+        const failed = runs.filter((r: { status: string }) => r.status === 'failed').length;
+        console.log(`🚀 Runs: ${runs.length} total (${running} ejecutando, ${failed} failed)`);
+      } catch {
+        console.log('⚪ Runs: No disponible');
+      }
+    } else {
+      console.log('⚪ Runs: (API offline - iniciar server para ver runs)');
     }
     
     console.log('\n💡 Comandos útiles:');
