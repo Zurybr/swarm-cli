@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 4
-current_plan: 01
+current_plan: 02
 status: executing
-last_updated: "2026-03-10T20:00:00.000Z"
+last_updated: "2026-03-10T20:51:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 3
@@ -41,7 +41,7 @@ Ready to plan
 
 **Milestone:** v1.0 Foundation
 **Phase:** 04-domain-expert-agents
-**Active Plans:** 04-01 Complete (Phase 4 In Progress)
+**Active Plans:** 04-02 Complete (Phase 4 In Progress)
 
 ---
 
@@ -65,6 +65,7 @@ Ready to plan
 | 03-02 Summary | 0789ad8 | ComposedAgent and SkillChain for orchestration (28 tests) |
 | 03-03 Summary | 4cc1e64 | CLI commands and integration tests (15 tests) |
 | 04-01 Summary | 57302b6 | Domain expert skills: Security, Performance, Documentation (28 tests) |
+| 04-02 Summary | acde8ac | ExpertAgent definitions and ExpertAPI with 52 new tests |
 
 ---
 
@@ -84,23 +85,24 @@ Ready to plan
 
 ## Next Action
 
-Phase 04-01 complete:
-- 04-01: Domain expert skills with Security, Performance, Documentation (28 tests)
+Phase 04-02 complete:
+- 04-02: ExpertAgent definitions extending AgencyAgent, ExpertAPI for hybrid invocation
 
-Total Phase 4: 28 tests covering three domain expert skills
+Total Phase 4: 80 tests covering expert skills, definitions, and API
 
-Ready for Phase 04-02: Expert CLI Commands.
+Ready for Phase 05: Orchestration patterns.
 
 ---
 
 ## Session Continuity
 
-**Last Work:** Completed 04-01 Domain Expert Skills
-- Implemented SecurityReviewSkill with secret detection, vulnerability scanning, pattern analysis
-- Implemented PerformanceExpertSkill with typhonjs-escomplex integration
-- Implemented DocumentationExpertSkill with ts-morph drift detection
-- All 28 expert definition tests pass
-**Context Files:** ROADMAP.md, REQUIREMENTS.md, 04-01-SUMMARY.md
+**Last Work:** Completed 04-02 ExpertAgent Definitions and ExpertAPI
+- Implemented ExpertAgent interface extending AgencyAgent
+- Created three expert definitions (security, performance, documentation) with factory functions
+- Implemented ExpertAPI class for programmatic expert invocation
+- Updated securityEngineer to show expert integration pattern
+- All 80 expert definition tests pass
+**Context Files:** ROADMAP.md, REQUIREMENTS.md, 04-02-SUMMARY.md
 **Open Decisions:** None
 
 ---

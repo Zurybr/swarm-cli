@@ -1,7 +1,7 @@
 # Roadmap: New Agent Capabilities
 
 **Version:** 1.0
-**Status:** Phase 1 Complete (4/4 plans), Phase 2 Complete (3/3), Phase 3 Complete (3/3), Phase 4 In Progress (1/3 plans)
+**Status:** Phase 1 Complete (4/4 plans), Phase 2 Complete (3/3), Phase 3 Complete (3/3), Phase 4 In Progress (2/3 plans)
 **Created:** 2026-03-09
 
 ---
@@ -115,22 +115,28 @@
 - REQ-03: Domain expert agents
 
 **Plans:**
-1/3 plans executed
+2/3 plans executed
 - [x] 04-01-PLAN.md — Core expert skills: Security, Performance, Documentation (Wave 1) — Complete
-- [ ] 04-02-PLAN.md — ExpertAgent definitions extending AgencyAgent, ExpertAPI (Wave 2)
+- [x] 04-02-PLAN.md — ExpertAgent definitions extending AgencyAgent, ExpertAPI (Wave 2) — Complete
 - [ ] 04-03-PLAN.md — CLI commands and integration tests (Wave 3)
 
 **Key Deliverables:**
 - [x] Security Review Skill (dependency scanning, secret detection) — Complete
 - [x] Performance Expert Skill (complexity analysis, bottleneck detection) — Complete
 - [x] Documentation Expert Skill (doc generation, drift detection) — Complete
-- [x] Expert definitions in `src/skills/expert-definitions/` — Complete
+- [x] ExpertAgent interface extending AgencyAgent — Complete
+- [x] ExpertAPI class for hybrid CLI/internal invocation — Complete
+- [x] Three expert definitions (security, performance, documentation) — Complete
+- [x] Agency agent integration pattern (securityEngineer) — Complete
 - [ ] CLI commands: `swarm security-scan`, `swarm perf-analyze`, `swarm doc-check` — Planned for 04-03
 
 **Success Criteria:**
 - [x] Security agent flags known vulnerability patterns — Complete
 - [x] Performance agent identifies slow functions — Complete
 - [x] Documentation agent generates JSDoc for undocumented functions — Complete
+- [x] ExpertAgent properly extends AgencyAgent — Complete
+- [x] ExpertAPI.invokeExpert() routes to correct expert skill — Complete
+- [x] Agency agent integration pattern demonstrated — Complete
 
 **Depends On:** Phase 3
 
@@ -218,9 +224,9 @@
 
 ## Next Steps
 
-1. **Phase 4** → Continue with 04-02: ExpertAgent definitions and ExpertAPI
-2. Phase 4-01 complete: SecurityReviewSkill, PerformanceExpertSkill, DocumentationExpertSkill (28 tests)
-3. Phase 4 in progress: 1 of 3 plans complete, 2 remaining (ExpertAgent definitions, CLI commands)
+1. **Phase 4** → Continue with 04-03: CLI commands for expert invocation
+2. Phase 4-02 complete: ExpertAgent definitions, ExpertAPI, agency agent integration (52 new tests)
+3. Phase 4 in progress: 2 of 3 plans complete, 1 remaining (CLI commands)
 
 ---
 
