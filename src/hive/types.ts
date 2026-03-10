@@ -88,6 +88,8 @@ export interface CreateCellOptions {
   metadata?: Record<string, unknown>;
   tags?: string[];
   owner?: string;
+  /** Custom ID for the cell (if not provided, one will be generated) */
+  id?: string;
 }
 
 /**
