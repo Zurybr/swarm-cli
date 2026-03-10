@@ -17,14 +17,29 @@ describe('DocumentationExpertSkill', () => {
 
   describe('execute()', () => {
     it('should return ExpertOutput with findings array', async () => {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const os = await import('os');
+
+      const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'doc-test-'));
+      const testFile = path.join(tempDir, 'test.ts');
+
+      await fs.writeFile(
+        testFile,
+        `export function add(a: number, b: number): number {\n  return a + b;\n}\n`
+      );
+
       const input = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both' as const,
         severityThreshold: 'low' as const,
         checkMissingJsDoc: true,
       };
 
       const result = await skill.execute(input);
+
+      // Cleanup
+      await fs.rm(tempDir, { recursive: true, force: true });
 
       expect(result).toHaveProperty('json');
       expect(result).toHaveProperty('markdown');
