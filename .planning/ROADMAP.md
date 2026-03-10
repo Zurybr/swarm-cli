@@ -1,7 +1,7 @@
 # Roadmap: New Agent Capabilities
 
 **Version:** 1.0
-**Status:** Phase 1 Complete (4/4 plans complete), Phase 2 Complete (3/3), Phase 3 Complete (3/3), Phase 4 Planned (3/3)
+**Status:** Phase 1 Complete (4/4 plans), Phase 2 Complete (3/3), Phase 3 Complete (3/3), Phase 4 In Progress (1/3 plans)
 **Created:** 2026-03-09
 
 ---
@@ -13,7 +13,7 @@
 | 1 | Foundation | Complete    | 2026-03-09 |
 | 2 | Complete | Complete | 2026-03-09 |
 | 3 | Complete | Complete | 2026-03-10 |
-| 4 | Planned | REQ-03 | 3-4 days |
+| 4 | In Progress | REQ-03 | 3-4 days |
 | 5 | Orchestration Patterns | REQ-05 | 2-3 days |
 | 6 | Conflict Detection | REQ-06 | 2-3 days |
 | 7 | Observability | REQ-07, REQ-04 | 2-3 days |
@@ -115,22 +115,22 @@
 - REQ-03: Domain expert agents
 
 **Plans:**
-0/3 plans executed
-- [ ] 04-01-PLAN.md — Core expert skills: Security, Performance, Documentation (Wave 1)
+1/3 plans executed
+- [x] 04-01-PLAN.md — Core expert skills: Security, Performance, Documentation (Wave 1) — Complete
 - [ ] 04-02-PLAN.md — ExpertAgent definitions extending AgencyAgent, ExpertAPI (Wave 2)
 - [ ] 04-03-PLAN.md — CLI commands and integration tests (Wave 3)
 
 **Key Deliverables:**
-- Security Review Agent (dependency scanning, secret detection)
-- Performance Agent (complexity analysis, bottleneck detection)
-- Documentation Agent (doc generation, drift detection)
-- Expert definitions in `src/skills/expert-definitions/`
-- CLI commands: `swarm security-scan`, `swarm perf-analyze`, `swarm doc-check`
+- [x] Security Review Skill (dependency scanning, secret detection) — Complete
+- [x] Performance Expert Skill (complexity analysis, bottleneck detection) — Complete
+- [x] Documentation Expert Skill (doc generation, drift detection) — Complete
+- [x] Expert definitions in `src/skills/expert-definitions/` — Complete
+- [ ] CLI commands: `swarm security-scan`, `swarm perf-analyze`, `swarm doc-check` — Planned for 04-03
 
 **Success Criteria:**
-- Security agent flags known vulnerability patterns
-- Performance agent identifies slow functions
-- Documentation agent generates JSDoc for undocumented functions
+- [x] Security agent flags known vulnerability patterns — Complete
+- [x] Performance agent identifies slow functions — Complete
+- [x] Documentation agent generates JSDoc for undocumented functions — Complete
 
 **Depends On:** Phase 3
 
@@ -218,9 +218,9 @@
 
 ## Next Steps
 
-1. **Phase 4** → Execute domain expert agents plans → `/gsd:execute-phase 04`
-2. Phase 3 complete: AgentBuilder, ComposedAgent, and CLI integration (63 tests)
-3. Phase 4 planned: 3 plans in 3 waves covering Security, Performance, and Documentation experts
+1. **Phase 4** → Continue with 04-02: ExpertAgent definitions and ExpertAPI
+2. Phase 4-01 complete: SecurityReviewSkill, PerformanceExpertSkill, DocumentationExpertSkill (28 tests)
+3. Phase 4 in progress: 1 of 3 plans complete, 2 remaining (ExpertAgent definitions, CLI commands)
 
 ---
 
