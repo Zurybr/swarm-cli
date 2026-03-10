@@ -24,10 +24,13 @@
     "inquirer": "^9.2.0",
     "semver": "^7.7.4",
     "sqlite3": "^5.1.6",
+    "ts-morph": "^27.0.2",
+    "typhonjs-escomplex": "^0.1.0",
     "ws": "^8.16.0",
     "yaml": "^2.3.0"
   },
   "devDependencies": {
+    "@npmcli/arborist": "^9.4.0",
     "@types/ajv": "^0.0.5",
     "@types/express": "^4.17.0",
     "@types/jest": "^29.5.14",

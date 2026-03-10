@@ -73,8 +73,8 @@ describe('SecurityExpertSkill', () => {
       const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'security-test-'));
       const testFile = path.join(tempDir, 'config.ts');
 
-      // Write a file with a GitHub token pattern
-      const githubToken = 'ghp_' + 'a'.repeat(36);
+      // Write a file with a GitHub token pattern (high entropy)
+      const githubToken = 'ghp_' + 'aB3xK9mP2nQ7wR4tY6uI8oL1jH5gF0dS3vB7cX9zA2mN4pQ6rT8yU0iO2kL5jH7';
       await fs.writeFile(
         testFile,
         `export const GITHUB_TOKEN = '${githubToken}';\n`
