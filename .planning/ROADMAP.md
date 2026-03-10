@@ -13,7 +13,7 @@
 | 1 | Foundation | Complete    | 2026-03-09 |
 | 2 | Complete | Complete | 2026-03-09 |
 | 3 | Complete | Complete | 2026-03-10 |
-| 4 | In Progress | REQ-03 | 3-4 days |
+| 4 | 3/3 | Complete   | 2026-03-10 |
 | 5 | Orchestration Patterns | REQ-05 | 2-3 days |
 | 6 | Conflict Detection | REQ-06 | 2-3 days |
 | 7 | Observability | REQ-07, REQ-04 | 2-3 days |
@@ -115,7 +115,7 @@
 - REQ-03: Domain expert agents
 
 **Plans:**
-2/3 plans executed
+3/3 plans complete
 - [x] 04-01-PLAN.md — Core expert skills: Security, Performance, Documentation (Wave 1) — Complete
 - [x] 04-02-PLAN.md — ExpertAgent definitions extending AgencyAgent, ExpertAPI (Wave 2) — Complete
 - [ ] 04-03-PLAN.md — CLI commands and integration tests (Wave 3)

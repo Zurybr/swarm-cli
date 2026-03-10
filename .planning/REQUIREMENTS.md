@@ -38,10 +38,10 @@
 **Description:** Pre-built agents for common domains
 
 **Acceptance Criteria:**
-- [ ] Security Review Agent — analyzes code for vulnerabilities
-- [ ] Performance Agent — identifies optimization opportunities
-- [ ] Documentation Agent — generates/maintains docs
-- [ ] Each domain agent uses composable skill system (REQ-02)
+- [x] Security Review Agent — analyzes code for vulnerabilities
+- [x] Performance Agent — identifies optimization opportunities
+- [x] Documentation Agent — generates/maintains docs
+- [x] Each domain agent uses composable skill system (REQ-02)
 
 **From Research:** Specialized agents with explicit handoffs reduce "tool overload"
 
