@@ -1,7 +1,7 @@
 # Roadmap: New Agent Capabilities
 
 **Version:** 1.0
-**Status:** Phase 1 Complete (4/4 plans complete), Phase 2 Complete (3/3), Phase 3 Planned (3/3)
+**Status:** Phase 1 Complete (4/4 plans complete), Phase 2 Complete (3/3), Phase 3 Complete (3/3), Phase 4 Planned (3/3)
 **Created:** 2026-03-09
 
 ---
@@ -12,8 +12,8 @@
 |-------|------|--------------|---------------|
 | 1 | Foundation | Complete    | 2026-03-09 |
 | 2 | Complete | Complete | 2026-03-09 |
-| 3 | 0/3 | Planned    |  |
-| 4 | Domain Expert Agents | REQ-03 | 3-4 days |
+| 3 | Complete | Complete | 2026-03-10 |
+| 4 | Planned | REQ-03 | 3-4 days |
 | 5 | Orchestration Patterns | REQ-05 | 2-3 days |
 | 6 | Conflict Detection | REQ-06 | 2-3 days |
 | 7 | Observability | REQ-07, REQ-04 | 2-3 days |
@@ -85,21 +85,22 @@
 - REQ-02: Composable agent builder
 
 **Plans:**
-1/3 plans executed
+3/3 plans complete
 - [x] 03-01-PLAN.md — AgentBuilder fluent API and schema validation (Wave 1) — Complete
-- [ ] 03-02-PLAN.md — ComposedAgent class and orchestrator integration (Wave 2)
-- [ ] 03-03-PLAN.md — CLI commands and integration tests (Wave 3)
+- [x] 03-02-PLAN.md — ComposedAgent class and orchestrator integration (Wave 2) — Complete
+- [x] 03-03-PLAN.md — CLI commands and integration tests (Wave 3) — Complete
 
 **Key Deliverables:**
 - `AgentBuilder` fluent API — Complete
+- `ComposedAgent` class with skill chain execution — Complete
+- `SkillChain` and `SkillChainExecutor` for orchestration — Complete
 - Input/output compatibility validation — Complete
-- Integration with existing `BaseAgent`
-- CLI command: `agent build`
+- CLI command: `agent build` — Complete
 
 **Success Criteria:**
-- Can compose two compatible skills into an agent
-- Incompatible skills trigger validation error
-- Composed agents execute via existing orchestrator
+- Can compose two compatible skills into an agent — Complete
+- Incompatible skills trigger validation error — Complete
+- Composed agents execute via existing orchestrator — Complete
 
 **Depends On:** Phase 2
 
@@ -113,11 +114,18 @@
 **Requirements:**
 - REQ-03: Domain expert agents
 
+**Plans:**
+0/3 plans executed
+- [ ] 04-01-PLAN.md — Core expert skills: Security, Performance, Documentation (Wave 1)
+- [ ] 04-02-PLAN.md — ExpertAgent definitions extending AgencyAgent, ExpertAPI (Wave 2)
+- [ ] 04-03-PLAN.md — CLI commands and integration tests (Wave 3)
+
 **Key Deliverables:**
 - Security Review Agent (dependency scanning, secret detection)
 - Performance Agent (complexity analysis, bottleneck detection)
 - Documentation Agent (doc generation, drift detection)
-- Agent definitions in `src/agents/definitions/experts/`
+- Expert definitions in `src/skills/expert-definitions/`
+- CLI commands: `swarm security-scan`, `swarm perf-analyze`, `swarm doc-check`
 
 **Success Criteria:**
 - Security agent flags known vulnerability patterns
@@ -210,9 +218,9 @@
 
 ## Next Steps
 
-1. **Phase 3** → Execute composable agent builder plans → `/gsd:execute-phase 03`
-2. Phase 2 complete: Skill registry with CLI commands, FTS5 search, and semantic versioning
-3. Phase 3 planned: 3 plans in 3 waves covering AgentBuilder, ComposedAgent, and CLI integration
+1. **Phase 4** → Execute domain expert agents plans → `/gsd:execute-phase 04`
+2. Phase 3 complete: AgentBuilder, ComposedAgent, and CLI integration (63 tests)
+3. Phase 4 planned: 3 plans in 3 waves covering Security, Performance, and Documentation experts
 
 ---
 
