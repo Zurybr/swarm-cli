@@ -66,7 +66,7 @@ export class Cell {
   static create(options: CreateCellOptions): Cell {
     const now = new Date().toISOString();
     const type = options.type || 'task';
-    const id = generateCellId(type);
+    const id = options.id || generateCellId(type);
 
     const data: CellData = {
       id,
