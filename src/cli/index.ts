@@ -17,6 +17,7 @@ import { createStateCommand } from '../state/cli';
 import { createWaveCommand } from '../wave/cli';
 import { createContextCommand } from '../context/cli';
 import { createGSDCommand } from '../gsd/cli';
+import { registerExpertCommands } from '../skills/expert-definitions/cli';
 import sqlite3 from 'sqlite3';
 
 const logger = new Logger('CLI');
@@ -199,13 +200,15 @@ program.addCommand(createContextCommand());
 // GSD project management commands
 program.addCommand(createGSDCommand());
 
-// Skill and agent commands - initialized asynchronously
+// Skill, agent, and expert commands - initialized asynchronously
 (async () => {
   try {
     const registry = await initializeSkillRegistry();
     registerSkillCommands(program, registry);
     // Register agent commands after skill commands (dependency order)
     registerAgentCommands(program, registry);
+    // Register expert commands
+    registerExpertCommands(program);
   } catch (error) {
     logger.error('Failed to initialize skill registry', error);
     // Continue without skill commands - they won't be available
