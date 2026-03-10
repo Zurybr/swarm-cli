@@ -121,7 +121,7 @@ program
   .description('Listar runs')
   .action(() => {
     const runs = orchestrator.getAllRuns();
-    console.table(runs.map(r => ({
+    console.table(runs.map((r: { id: string; status: string; agents: any[]; tasks: any[]; createdAt: Date }) => ({
       id: r.id,
       status: r.status,
       agents: r.agents.length,
@@ -249,6 +249,81 @@ program
     console.log(`  Max iterations: ${current.ralphMaxIterations}`);
     console.log(`  Max parallel agents: ${current.maxParallelAgents}`);
     console.log(`  Default retries: ${current.defaultRetries}`);
+  });
+
+// Status command - quick system overview
+program
+  .command('status')
+  .description('Mostrar estado del sistema')
+  .action(async () => {
+    const { execSync } = require('child_process');
+    const fs = require('fs');
+    const path = require('path');
+    
+    console.log('\n❤️‍🔥 **Swarm CLI Status**\n');
+    
+    // API Status
+    try {
+      await fetch('http://localhost:3000/health');
+      console.log('🟢 API: Online');
+    } catch {
+      console.log('🔴 API: Offline (run `swarm-cli server` to start)');
+    }
+    
+    // Git status
+    try {
+      const gitStatus = execSync('git status --short', { cwd: process.cwd(), encoding: 'utf8' });
+      const gitLog = execSync('git log --oneline -1', { cwd: process.cwd(), encoding: 'utf8' }).trim();
+      if (gitStatus.trim()) {
+        console.log('🟡 Git: Cambios sin commitear');
+      } else {
+        console.log('🟢 Git: Limpio');
+      }
+      console.log(`   Último commit: ${gitLog}`);
+    } catch {
+      console.log('⚪ Git: No disponible');
+    }
+    
+    // Issues count
+    try {
+      const hivePath = path.join(process.cwd(), '.hive', 'issues.jsonl');
+      if (fs.existsSync(hivePath)) {
+        const content = fs.readFileSync(hivePath, 'utf8');
+        const count = content.trim().split('\n').filter((l: string) => l.trim()).length;
+        console.log(`📋 Issues: ${count} registrados`);
+      } else {
+        console.log('📋 Issues: 0 (no .hive/issues.jsonl)');
+      }
+    } catch {
+      console.log('⚪ Issues: No disponible');
+    }
+    
+    // Storage
+    try {
+      const df = execSync('df -h . | tail -1', { cwd: process.cwd(), encoding: 'utf8' }).trim();
+      const parts = df.split(/\s+/);
+      const usage = parts[4];
+      const avail = parts[3];
+      console.log(`💾 Storage: ${usage} usado, ${avail} disponible`);
+    } catch {
+      console.log('⚪ Storage: No disponible');
+    }
+    
+    // Runs
+    try {
+      const runs = orchestrator.getAllRuns();
+      const running = runs.filter((r: { status: string }) => r.status === 'executing').length;
+      const failed = runs.filter((r: { status: string }) => r.status === 'failed').length;
+      console.log(`🚀 Runs: ${runs.length} total (${running} ejecutando, ${failed} failed)`);
+    } catch {
+      console.log('⚪ Runs: No disponible');
+    }
+    
+    console.log('\n💡 Comandos útiles:');
+    console.log('   swarm-cli server          - Iniciar API');
+    console.log('   swarm-cli run:list        - Listar runs');
+    console.log('   swarm-cli agent:list      - Listar agentes');
+    console.log('');
   });
 
 // Default to interactive mode
