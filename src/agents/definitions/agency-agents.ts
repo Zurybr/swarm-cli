@@ -1,6 +1,14 @@
 // Agency Agents Integration for Swarm CLI
 // Source: https://github.com/msitarzewski/agency-agents
 // License: MIT
+//
+// Expert Integration Pattern:
+// Agency agents (like securityEngineer) USE expert agents (like security-expert)
+// as specialized tools for deep automated analysis. Experts complement agency
+// agents by providing programmatic analysis capabilities via ExpertAPI.
+//
+// Example: securityEngineer.workflow includes "invoke-security-expert-for-deep-analysis"
+// which uses ExpertAPI.invokeExpert('security-expert', task) to run automated scans.
 
 export interface AgencyAgent {
   id: string;
@@ -82,14 +90,22 @@ export const AGENCY_AGENTS: Record<string, AgencyAgent> = {
     name: "Security Engineer",
     division: "Engineering",
     role: "security",
-    description: "Threat modeling, secure code review, security architecture",
+    description: "Threat modeling, secure code review, security architecture. Uses security-expert for automated deep analysis.",
     personality: `Paranoid by profession, pragmatic by choice.
     Thinks like an attacker, speaks like a partner.
-    No security theater, only measurable risk reduction.`,
-    tools: ["semgrep", "snyk", "owasp", "burp", "vault"],
-    deliverables: ["threat-model", "security-review", "vulnerability-report", "remediation-plan"],
-    workflow: ["threat-modeling", "code-review", "vuln-scanning", "pen-test", "remediation"],
-    successMetrics: ["zero-critical-vulns", "security-test-coverage", "incident-response-time"]
+    No security theater, only measurable risk reduction.
+    Leverages the security-expert agent for automated secret detection, vulnerability scanning, and pattern analysis.`,
+    tools: ["semgrep", "snyk", "owasp", "burp", "vault", "security-expert"],
+    deliverables: ["threat-model", "security-review", "vulnerability-report", "remediation-plan", "automated-security-analysis"],
+    workflow: [
+      "threat-modeling",
+      "invoke-security-expert-for-deep-analysis",
+      "code-review",
+      "vuln-scanning",
+      "pen-test",
+      "remediation"
+    ],
+    successMetrics: ["zero-critical-vulns", "security-test-coverage", "incident-response-time", "automated-scan-coverage"]
   },
 
   rapidPrototyper: {
