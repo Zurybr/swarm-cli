@@ -23,7 +23,10 @@ const config: Config = {
         isolatedModules: true
       }
     ]
-  }
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!(chalk|inquirer)/)'
+  ]
 };
 
 export default config;

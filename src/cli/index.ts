@@ -16,6 +16,7 @@ import { registerVerificationCommands } from '../verification/cli';
 import { createStateCommand } from '../state/cli';
 import { createWaveCommand } from '../wave/cli';
 import { createContextCommand } from '../context/cli';
+import { createGSDCommand } from '../gsd/cli';
 import sqlite3 from 'sqlite3';
 
 const logger = new Logger('CLI');
@@ -194,6 +195,9 @@ program.addCommand(createWaveCommand());
 
 // Context engineering commands
 program.addCommand(createContextCommand());
+
+// GSD project management commands
+program.addCommand(createGSDCommand());
 
 // Skill and agent commands - initialized asynchronously
 (async () => {
