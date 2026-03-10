@@ -36,6 +36,27 @@ export {
   DriftType,
 } from './types';
 
+// Expert Agent types and API
+export {
+  ExpertAgent,
+  ExpertDefinition,
+  ExpertiseLevel,
+  OutputFormat,
+  isExpertAgent,
+  hasCapability,
+  getExpertsByCapability,
+  getExpertsByLevel,
+} from './expert-agent';
+
+export {
+  ExpertAPI,
+} from './api';
+
+// Expert definitions
+export { securityExpert } from './security/definition';
+export { performanceExpert } from './performance/definition';
+export { documentationExpert } from './documentation/definition';
+
 // Security Expert
 export {
   SecurityReviewSkill,
