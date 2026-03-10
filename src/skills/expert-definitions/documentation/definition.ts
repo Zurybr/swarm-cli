@@ -39,7 +39,7 @@ export const documentationExpert: ExpertDefinition = {
   successMetrics: ['documentation-coverage-100-percent', 'zero-drift-issues', 'complete-api-docs'],
 
   // ExpertAgent fields
-  skills: ['documentation-review'],
+  skills: ['documentation-expert'],
   capabilities: ['drift-detection', 'doc-generation', 'readme-creation'],
   expertiseLevel: 'senior',
   outputFormats: ['json', 'markdown'],

@@ -38,7 +38,7 @@ export const performanceExpert: ExpertDefinition = {
   successMetrics: ['cyclomatic-complexity-below-threshold', 'maintainability-index-above-80', 'zero-high-complexity-functions'],
 
   // ExpertAgent fields
-  skills: ['performance-analysis'],
+  skills: ['performance-expert'],
   capabilities: ['complexity-analysis', 'bottleneck-detection', 'optimization-suggestions'],
   expertiseLevel: 'senior',
   outputFormats: ['json', 'markdown'],

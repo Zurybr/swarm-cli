@@ -306,8 +306,8 @@ describe('performanceExpert definition', () => {
     expect(performanceExpert.expertiseLevel).toBe('senior');
   });
 
-  it('should have performance-analysis skill', () => {
-    expect(performanceExpert.skills).toContain('performance-analysis');
+  it('should have performance-expert skill', () => {
+    expect(performanceExpert.skills).toContain('performance-expert');
   });
 
   it('should have performance capabilities', () => {
@@ -323,7 +323,7 @@ describe('performanceExpert definition', () => {
   it('should create PerformanceExpertSkill instance', () => {
     const skill = performanceExpert.createSkill();
     expect(skill).toBeDefined();
-    expect(skill.id).toBe('performance-analysis');
+    expect(skill.id).toBe('performance-expert');
   });
 
   it('should have tools for complexity and bottleneck analysis', () => {
@@ -344,8 +344,8 @@ describe('documentationExpert definition', () => {
     expect(documentationExpert.expertiseLevel).toBe('senior');
   });
 
-  it('should have documentation-review skill', () => {
-    expect(documentationExpert.skills).toContain('documentation-review');
+  it('should have documentation-expert skill', () => {
+    expect(documentationExpert.skills).toContain('documentation-expert');
   });
 
   it('should have documentation capabilities', () => {
@@ -361,7 +361,7 @@ describe('documentationExpert definition', () => {
   it('should create DocumentationExpertSkill instance', () => {
     const skill = documentationExpert.createSkill();
     expect(skill).toBeDefined();
-    expect(skill.id).toBe('documentation-review');
+    expect(skill.id).toBe('documentation-expert');
   });
 
   it('should have tools for drift detection and doc generation', () => {
