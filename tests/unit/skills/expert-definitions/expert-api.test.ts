@@ -4,6 +4,9 @@
  * Tests for ExpertAPI class providing hybrid CLI/internal invocation
  */
 
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import * as os from 'os';
 import { ExpertAPI } from '../../../../src/skills/expert-definitions/api';
 import { SkillRegistry } from '../../../../src/skills/registry/skill-registry';
 import { AgentBuilder } from '../../../../src/agents/builder/agent-builder';
@@ -11,9 +14,6 @@ import {
   ExpertTaskInput,
   ExpertOutput,
 } from '../../../../src/skills/expert-definitions/types';
-import { SecurityReviewSkill } from '../../../../src/skills/expert-definitions/security/skill';
-import { PerformanceExpertSkill } from '../../../../src/skills/expert-definitions/performance/skill';
-import { DocumentationExpertSkill } from '../../../../src/skills/expert-definitions/documentation/skill';
 
 // Mock dependencies
 jest.mock('../../../../src/skills/registry/skill-registry');
@@ -23,8 +23,9 @@ describe('ExpertAPI', () => {
   let mockRegistry: jest.Mocked<SkillRegistry>;
   let mockAgentBuilder: jest.Mocked<AgentBuilder>;
   let expertAPI: ExpertAPI;
+  let tempDir: string;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockRegistry = {
       getMetadata: jest.fn(),
     } as unknown as jest.Mocked<SkillRegistry>;
@@ -36,11 +37,22 @@ describe('ExpertAPI', () => {
       build: jest.fn(),
     } as unknown as jest.Mocked<AgentBuilder>;
 
+    // Default mock: return metadata for any skill (simulating registered skills)
+    mockRegistry.getMetadata.mockReturnValue({
+      name: 'mock-skill',
+      version: '1.0.0',
+    } as any);
+
     expertAPI = new ExpertAPI(mockRegistry, mockAgentBuilder);
+
+    // Create temp directory for tests
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'expert-api-test-'));
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    // Clean up temp directory
+    await fs.rm(tempDir, { recursive: true, force: true });
   });
 
   describe('constructor', () => {
@@ -52,8 +64,11 @@ describe('ExpertAPI', () => {
 
   describe('invokeExpert', () => {
     it('should return ExpertOutput for valid security-expert', async () => {
+      // Create a test file in temp dir
+      await fs.writeFile(path.join(tempDir, 'test.ts'), 'const x = 1;');
+
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
@@ -68,8 +83,11 @@ describe('ExpertAPI', () => {
     });
 
     it('should return ExpertOutput for valid perf-expert', async () => {
+      // Create a test file in temp dir
+      await fs.writeFile(path.join(tempDir, 'test.ts'), 'function add(a: number, b: number) { return a + b; }');
+
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
@@ -81,8 +99,11 @@ describe('ExpertAPI', () => {
     });
 
     it('should return ExpertOutput for valid doc-expert', async () => {
+      // Create a test file in temp dir
+      await fs.writeFile(path.join(tempDir, 'test.ts'), '/** Test */ export function foo() {}');
+
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
@@ -95,7 +116,7 @@ describe('ExpertAPI', () => {
 
     it('should throw error for unknown expertId', async () => {
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
@@ -105,8 +126,11 @@ describe('ExpertAPI', () => {
     });
 
     it('should route to correct skill based on expertId', async () => {
+      // Create a test file in temp dir
+      await fs.writeFile(path.join(tempDir, 'test.ts'), 'const x = 1;');
+
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
@@ -117,11 +141,14 @@ describe('ExpertAPI', () => {
       // Performance expert should use PerformanceExpertSkill
       const perfResult = await expertAPI.invokeExpert('perf-expert', task);
       expect(perfResult.json.metadata.expertVersion).toBeDefined();
-    });
+    }, 10000);
 
     it('should include durationMs in metadata', async () => {
+      // Create a test file in temp dir
+      await fs.writeFile(path.join(tempDir, 'test.ts'), 'const x = 1;');
+
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
@@ -134,22 +161,24 @@ describe('ExpertAPI', () => {
       expect(result.json.metadata.durationMs).toBeLessThanOrEqual(endTime - startTime + 100);
     });
 
-    it('should validate skill availability before invocation', async () => {
+    it('should throw when skill not found in registry', async () => {
+      // Override mock to return undefined (skill not registered)
       mockRegistry.getMetadata.mockReturnValue(undefined);
 
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
-      // Should still work with direct skill instantiation
-      const result = await expertAPI.invokeExpert('security-expert', task);
-      expect(result).toBeDefined();
+      // Should throw because skill is not in registry
+      await expect(expertAPI.invokeExpert('security-expert', task)).rejects.toThrow(
+        'Skill security-review not found in registry'
+      );
     });
 
     it('should handle partial failures with errors array', async () => {
       const task: ExpertTaskInput = {
-        targetPath: './non-existent-path',
+        targetPath: './non-existent-path-12345',
         outputFormat: 'both',
       };
 
@@ -194,11 +223,11 @@ describe('ExpertAPI', () => {
     it('should format error as ExpertOutput', () => {
       const error = new Error('Test error');
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
-      const result = (expertAPI as any).formatErrorOutput(error, task);
+      const result = (expertAPI as any).formatErrorOutput(error, task, Date.now());
 
       expect(result.json.findings).toEqual([]);
       expect(result.json.errors).toContain('Test error');
@@ -208,11 +237,11 @@ describe('ExpertAPI', () => {
 
     it('should handle non-Error objects', () => {
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
-      const result = (expertAPI as any).formatErrorOutput('string error', task);
+      const result = (expertAPI as any).formatErrorOutput('string error', task, Date.now());
 
       expect(result.json.errors).toContain('string error');
     });
@@ -225,8 +254,11 @@ describe('ExpertAPI', () => {
         version: '1.0.0',
       } as any);
 
+      // Create a test file in temp dir
+      await fs.writeFile(path.join(tempDir, 'test.ts'), 'const x = 1;');
+
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
@@ -239,20 +271,24 @@ describe('ExpertAPI', () => {
       mockRegistry.getMetadata.mockReturnValue(undefined);
 
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
-      // Should still work - validation is advisory for now
-      const result = await expertAPI.invokeExpert('security-expert', task);
-      expect(result).toBeDefined();
+      // Should throw because validation fails
+      await expect(expertAPI.invokeExpert('security-expert', task)).rejects.toThrow(
+        'Skill security-review not found in registry'
+      );
     });
   });
 
   describe('integration with AgentBuilder', () => {
     it('should use AgentBuilder for skill composition', async () => {
+      // Create a test file in temp dir
+      await fs.writeFile(path.join(tempDir, 'test.ts'), 'const x = 1;');
+
       const task: ExpertTaskInput = {
-        targetPath: './src',
+        targetPath: tempDir,
         outputFormat: 'both',
       };
 
@@ -260,6 +296,23 @@ describe('ExpertAPI', () => {
 
       // AgentBuilder should be available for composition
       expect(mockAgentBuilder).toBeDefined();
+    });
+  });
+
+  describe('utility methods', () => {
+    it('should return available expert IDs', () => {
+      const experts = expertAPI.getAvailableExperts();
+      expect(experts).toContain('security-expert');
+      expect(experts).toContain('perf-expert');
+      expect(experts).toContain('doc-expert');
+      expect(experts.length).toBe(3);
+    });
+
+    it('should check if expert is available', () => {
+      expect(expertAPI.hasExpert('security-expert')).toBe(true);
+      expect(expertAPI.hasExpert('perf-expert')).toBe(true);
+      expect(expertAPI.hasExpert('doc-expert')).toBe(true);
+      expect(expertAPI.hasExpert('unknown-expert')).toBe(false);
     });
   });
 });
