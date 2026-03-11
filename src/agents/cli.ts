@@ -17,6 +17,8 @@ import {
 import { getAgentName, getAgentDescription, getSuitableTaskTypes } from './definitions';
 import { getMetaPrompt } from './metaprompts';
 
+import { createFormatter, getOutputType, OutputFormatter } from '../utils/output-formatter';
+
 /**
  * Create the agents command group
  */
@@ -28,13 +30,17 @@ export function createAgentsCommand(): Command {
   command
     .command('types')
     .description('List all available agent types')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (options) => {
+      const outputType = getOutputType(options);
+      const fmt = createFormatter(outputType);
+      
       const system = getAgentSystem();
       const types = system.listAgentTypes();
 
-      if (options.json) {
-        console.log(JSON.stringify(types, null, 2));
+      if (outputType === 'json') {
+        fmt.print(types);
         return;
       }
 
@@ -54,7 +60,8 @@ export function createAgentsCommand(): Command {
   command
     .command('describe <type>')
     .description('Show detailed information about an agent type')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (type: string, options) => {
       if (!ALL_AGENT_TYPES.includes(type as AgentType)) {
         console.error(chalk.red(`Unknown agent type: ${type}`));
@@ -78,7 +85,7 @@ export function createAgentsCommand(): Command {
         permissions: summary,
       };
 
-      if (options.json) {
+      if (getOutputType(options) === 'json') {
         console.log(JSON.stringify(details, null, 2));
         return;
       }
@@ -117,7 +124,8 @@ export function createAgentsCommand(): Command {
     .description('Create a new agent instance')
     .option('-n, --name <name>', 'Custom name for the agent')
     .option('-c, --config <path>', 'Load agent from YAML config file')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (type: string, options) => {
       // If config is provided, load from YAML
       if (options.config) {
@@ -127,7 +135,7 @@ export function createAgentsCommand(): Command {
           console.log(chalk.green(`✅ Loaded agent config: ${config.name}`));
           console.log(chalk.gray(`  Description: ${config.description}`));
           console.log(chalk.gray(`  Division: ${config.division}`));
-          if (options.json) {
+          if (getOutputType(options) === 'json') {
             console.log(JSON.stringify(config, null, 2));
           }
           return;
@@ -148,7 +156,7 @@ export function createAgentsCommand(): Command {
         name: options.name,
       });
 
-      if (options.json) {
+      if (getOutputType(options) === 'json') {
         console.log(JSON.stringify(agent, null, 2));
         return;
       }
@@ -162,7 +170,8 @@ export function createAgentsCommand(): Command {
     .description('List all agent instances')
     .option('-t, --type <type>', 'Filter by agent type')
     .option('-s, --status <status>', 'Filter by status (idle, busy, paused, error)')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (options) => {
       const system = getAgentSystem();
       let agents = system.getAllAgents();
@@ -175,7 +184,7 @@ export function createAgentsCommand(): Command {
         agents = agents.filter((a) => a.status === options.status);
       }
 
-      if (options.json) {
+      if (getOutputType(options) === 'json') {
         console.log(JSON.stringify(agents, null, 2));
         return;
       }
@@ -211,7 +220,8 @@ export function createAgentsCommand(): Command {
   command
     .command('show <id>')
     .description('Show details of a specific agent instance')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (id: string, options) => {
       const system = getAgentSystem();
       const agent = system.getAgent(id);
@@ -221,7 +231,7 @@ export function createAgentsCommand(): Command {
         process.exit(1);
       }
 
-      if (options.json) {
+      if (getOutputType(options) === 'json') {
         console.log(JSON.stringify(agent, null, 2));
         return;
       }
@@ -272,7 +282,8 @@ export function createAgentsCommand(): Command {
     .option('-t, --type <type>', 'Task type')
     .option('-c, --complexity <level>', 'Complexity (simple, moderate, complex, very_complex)', 'moderate')
     .option('-p, --priority <level>', 'Priority (low, medium, high, critical)', 'medium')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (description: string, options) => {
       const system = getAgentSystem();
 
@@ -287,7 +298,7 @@ export function createAgentsCommand(): Command {
 
       const decision = system.routeTask(task);
 
-      if (options.json) {
+      if (getOutputType(options) === 'json') {
         console.log(JSON.stringify(decision, null, 2));
         return;
       }
@@ -325,7 +336,8 @@ export function createAgentsCommand(): Command {
   command
     .command('permissions <id>')
     .description('Show permissions for an agent instance')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (id: string, options) => {
       const system = getAgentSystem();
       const agent = system.getAgent(id);
@@ -337,7 +349,7 @@ export function createAgentsCommand(): Command {
 
       const summary = system.getPermissionSummary(id);
 
-      if (options.json) {
+      if (getOutputType(options) === 'json') {
         console.log(JSON.stringify(summary, null, 2));
         return;
       }
@@ -399,12 +411,13 @@ export function createAgentsCommand(): Command {
   command
     .command('stats')
     .description('Show agent system statistics')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (options) => {
       const system = getAgentSystem();
       const stats = system.getStats();
 
-      if (options.json) {
+      if (getOutputType(options) === 'json') {
         console.log(JSON.stringify(stats, null, 2));
         return;
       }
@@ -498,7 +511,8 @@ export function createAgentsCommand(): Command {
   command
     .command('compare <type1> <type2>')
     .description('Compare two agent types')
-    .option('-j, --json', 'Output as JSON')
+    .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
+    .option('-o, --output-type <type>', 'Output format: str or json', 'str')
     .action(async (type1: string, type2: string, options) => {
       if (!ALL_AGENT_TYPES.includes(type1 as AgentType)) {
         console.error(chalk.red(`Unknown agent type: ${type1}`));
@@ -527,7 +541,7 @@ export function createAgentsCommand(): Command {
         },
       };
 
-      if (options.json) {
+      if (getOutputType(options) === 'json') {
         console.log(JSON.stringify(comparison, null, 2));
         return;
       }
