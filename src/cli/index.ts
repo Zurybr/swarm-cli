@@ -58,7 +58,8 @@ program
   .option('--retry-attempts <n>', 'Número máximo de reintentos', '3')
   .option('--retry-delay <ms>', 'Delay inicial entre reintentos (ms)', '1000')
   .option('--retry-max-delay <ms>', 'Delay máximo entre reintentos (ms)', '30000')
-  .option('--retry-multiplier <n>', 'Multiplicador de backoff', '2');
+  .option('--retry-multiplier <n>', 'Multiplicador de backoff', '2')
+  .option('--streaming-on', 'Enable streaming output for LLM responses', false);
 
 // Interactive mode (default for humans)
 program
