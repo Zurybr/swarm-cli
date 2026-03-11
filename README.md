@@ -676,4 +676,93 @@ MIT License - ver [LICENSE](LICENSE)
 
 ---
 
-*Built with ❤️ using Mastra, Symphony patterns, and OpenClaw principles*
+## 🔄 GSD + Swarm-Tools Integration
+
+Swarm CLI integra las mejores prácticas de **GSD (Get Shit Done)** para planificación y **swarm-tools** para coordinación multi-agente.
+
+### ¿Qué es GSD?
+
+Framework de meta-prompting y context engineering que resuelve el "context rot" en agentes de código. Creado por TÂCHES, usado por ingenieros de Amazon, Google, Shopify.
+
+**Core concepts:**
+- **PLAN.md** ejecutable con waves y fases
+- **Goal-Backward Verification**: Verificación desde el objetivo hacia atrás
+- **Checkpoints** atómicos con commits
+- **SUMMARY.md** y **STATE.md** para contexto persistente
+
+### ¿Qué es swarm-tools?
+
+Plugin de coordinación multi-agente creado por Joel Hooks para OpenCode/Claude Code.
+
+**Core components:**
+- **Hive**: Task tracking git-backed en `.hive/`
+- **Hivemind**: Memoria semántica con Ollama embeddings
+- **Swarm Mail**: Actor-model messaging entre agentes
+
+### Flujo Integrado: Merge Complejo
+
+```bash
+# 1. Inicializar merge con GSD + swarm
+swarm-cli merge feature-x --strategy gsd+swarm
+```
+
+**Internamente:**
+
+```
+PRD.md / Spec
+    ↓
+GSD: PLAN.md → Goal-backward verification
+    ↓  
+swarm-tools: Descomposición en tasks
+    ↓
+Hive: Locks git por archivo
+    ↓
+Agents: Merger → Reviewer → Validator
+    ↓
+Swarm Mail: Handoffs entre agentes
+    ↓
+GSD: SUMMARY.md + VERIFICATION report
+    ↓
+Commit atómico
+```
+
+### Comandos de Integración
+
+| Comando | Descripción |
+|---------|-------------|
+| `swarm-cli merge <branch> --strategy gsd+swarm` | Merge con coordinación multi-agente |
+| `swarm-cli plan --gsd` | Generar PLAN.md ejecutable |
+| `swarm-cli swarm --decompose` | Descomponer con swarm-tools |
+| `swarm-cli handoff` | Transferir contexto entre agentes |
+
+### Arquitectura de Directorios
+
+```
+.swarm/
+├── gsd/
+│   ├── PLAN.md              # Plan ejecutable (GSD)
+│   ├── SUMMARY.md           # Resumen de sesión
+│   ├── STATE.md             # Estado persistente
+│   └── verification-report.md
+├── hive/
+│   ├── tasks/
+│   │   └── TASK-*.json      # Tareas swarm-tools
+│   ├── events/
+│   │   └── event-log.sqlite # Event sourcing
+│   └── agents/
+│       └── capabilities.json
+└── mailbox/
+    ├── agent-merger/
+    ├── agent-reviewer/
+    └── agent-validator/
+```
+
+### Referencias
+
+- **GSD**: https://github.com/gsd-build/get-shit-done
+- **swarm-tools**: https://github.com/joelhooks/swarm-tools
+- **OpenAI Symphony**: https://github.com/openai/symphony
+
+---
+
+*Built with ❤️ using Mastra, Symphony patterns, GSD methodology, and OpenClaw principles*
