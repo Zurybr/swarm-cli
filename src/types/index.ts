@@ -177,6 +177,7 @@ export interface Provider {
   supportsVision: boolean;
   supportsStreaming: boolean;
   maxContextTokens: number;
+  hasModel(modelId: string): boolean;
 }
 
 export interface Model {
