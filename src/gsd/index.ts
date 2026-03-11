@@ -728,7 +728,9 @@ export * from './phase';
 export * from './roadmap';
 export * from './state-manager';
 export * from './plan-parser';
+export * from './verification-system';
 export * from './checkpoint-system';
+export * from './wave-executor';
 
 // Default export
 export default GSDSystem;
