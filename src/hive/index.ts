@@ -463,4 +463,22 @@ export {
   type ClusteringStrategy
 } from './pattern-maturation';
 
+// Learning Capture System - Issue #26.4
+export { 
+  LearningCapture, 
+  createLearningCapture, 
+  quickCapture,
+  DEFAULT_TRIGGER_CONFIG,
+  DEFAULT_TAGGING_CONFIG
+} from './learning-capture';
+export type {
+  CapturedLearning,
+  CapturedLearningType,
+  TriggerConfig,
+  AutoTaggingConfig,
+  CaptureContext,
+  CustomTrigger,
+  TaggingRule,
+} from './learning-capture';
+
 export default Hive;
