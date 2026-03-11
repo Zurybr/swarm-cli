@@ -17,6 +17,7 @@ import { createStateCommand } from '../state/cli';
 import { createWaveCommand } from '../wave/cli';
 import { createContextCommand } from '../context/cli';
 import { createGSDCommand } from '../gsd/cli';
+import { createHivemindCommand } from '../hive/cli';
 import { registerExpertCommands } from '../skills/expert-definitions/cli';
 import sqlite3 from 'sqlite3';
 
@@ -201,6 +202,9 @@ program.addCommand(createStateCommand());
 
 // Wave execution commands
 program.addCommand(createWaveCommand());
+
+// Hivemind semantic memory commands
+program.addCommand(createHivemindCommand());
 
 // Context engineering commands
 program.addCommand(createContextCommand());

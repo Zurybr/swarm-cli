@@ -430,4 +430,55 @@ export {
   cosineSimilarity 
 } from './embedding-backends';
 
+// LearningStore - Vector Database with SQLite - Issue #26.2
+export { 
+  LearningStore, 
+  LearningStoreError,
+  type FindSimilarOptions 
+} from './learning-store';
+
+// Query Augmentation System - Issue #26.6
+export { 
+  QueryAugmentation,
+  type AugmentedQuery,
+  type QueryContext,
+  type RecentFileInfo,
+  type ActiveTaskInfo,
+  type DependencyInfo,
+  type QueryFilters,
+  type RelevanceScoring,
+  type QueryAugmentationOptions,
+  type AugmentOptions,
+} from './query-augmentation';
+
+// Pattern Maturation System - Issue #26.5
+export { 
+  PatternMaturation, 
+  PatternRecognizer,
+  type Pattern,
+  type PatternDetectionOptions,
+  type PatternDetectionResult,
+  type ConsolidationResult,
+  type SkillPromotionResult,
+  type ClusteringStrategy
+} from './pattern-maturation';
+
+// Learning Capture System - Issue #26.4
+export { 
+  LearningCapture, 
+  createLearningCapture, 
+  quickCapture,
+  DEFAULT_TRIGGER_CONFIG,
+  DEFAULT_TAGGING_CONFIG
+} from './learning-capture';
+export type {
+  CapturedLearning,
+  CapturedLearningType,
+  TriggerConfig,
+  AutoTaggingConfig,
+  CaptureContext,
+  CustomTrigger,
+  TaggingRule,
+} from './learning-capture';
+
 export default Hive;
