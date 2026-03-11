@@ -235,3 +235,58 @@ export const DEFAULT_GSD_CONFIG: GSDConfig = {
   enforceDependencies: true,
   notifyOnBlock: true,
 };
+
+// ==================== State Manager Types (Issue #19) ====================
+
+/** Metadata for project state tracking */
+export interface StateMetadata {
+  project: string;
+  created_at: string;
+  updated_at: string;
+  version: string;
+}
+
+/** Current position in the project workflow */
+export interface CurrentPosition {
+  current_phase: string;
+  current_plan: string;
+  current_task: number;
+  status: GSDStatus;
+}
+
+/** Progress summary statistics */
+export interface ProgressSummary {
+  phases_total: number;
+  phases_completed: number;
+  plans_total: number;
+  plans_completed: number;
+  tasks_total: number;
+  tasks_completed: number;
+  overall_progress: number;
+}
+
+/** Record of a completed phase */
+export interface CompletedPhase {
+  id: string;
+  completed_at: string;
+  plans: string[];
+}
+
+/** Record of a completed milestone */
+export interface CompletedMilestone {
+  id: string;
+  name: string;
+  completed_at: string;
+  phases: string[];
+}
+
+/** Complete project state structure */
+export interface ProjectState {
+  metadata: StateMetadata;
+  current_position: CurrentPosition;
+  progress_summary: ProgressSummary;
+  completed: {
+    phases: CompletedPhase[];
+    milestones: CompletedMilestone[];
+  };
+}

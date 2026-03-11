@@ -726,6 +726,8 @@ export * from './project';
 export * from './milestone';
 export * from './phase';
 export * from './roadmap';
+export * from './state-manager';
+export * from './plan-parser';
 
 // Default export
 export default GSDSystem;
