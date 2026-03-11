@@ -728,6 +728,7 @@ export * from './phase';
 export * from './roadmap';
 export * from './state-manager';
 export * from './plan-parser';
+export * from './checkpoint-system';
 
 // Default export
 export default GSDSystem;
