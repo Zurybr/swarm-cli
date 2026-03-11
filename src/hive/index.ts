@@ -420,4 +420,14 @@ export class Hive {
   }
 }
 
+// Hivemind Memory System - Issue #26
+export { Hivemind } from './hivemind';
+export { 
+  OllamaEmbeddingBackend, 
+  OpenAIEmbeddingBackend, 
+  FullTextSearchBackend,
+  createEmbeddingBackend,
+  cosineSimilarity 
+} from './embedding-backends';
+
 export default Hive;
