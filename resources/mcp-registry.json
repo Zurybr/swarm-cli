@@ -1,0 +1,150 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-01T00:00:00Z",
+  "servers": [
+    {
+      "name": "filesystem",
+      "displayName": "Filesystem Access",
+      "description": "Read and write files on the local filesystem",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-filesystem",
+      "tags": ["filesystem", "utility"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem",
+      "repository": "https://github.com/modelcontextprotocol/servers",
+      "configSchema": {
+        "type": "object",
+        "properties": {
+          "allowedPaths": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Paths the server can access"
+          }
+        }
+      }
+    },
+    {
+      "name": "github",
+      "displayName": "GitHub Integration",
+      "description": "Interact with GitHub repositories, issues, and PRs",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-github",
+      "tags": ["github", "api", "integration"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/github",
+      "repository": "https://github.com/modelcontextprotocol/servers",
+      "requiredEnv": ["GITHUB_PERSONAL_ACCESS_TOKEN"]
+    },
+    {
+      "name": "postgres",
+      "displayName": "PostgreSQL Database",
+      "description": "Query PostgreSQL databases",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-postgres",
+      "tags": ["database", "postgres", "sql"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/postgres",
+      "repository": "https://github.com/modelcontextprotocol/servers",
+      "configSchema": {
+        "type": "object",
+        "properties": {
+          "connectionString": {
+            "type": "string",
+            "description": "PostgreSQL connection string"
+          }
+        },
+        "required": ["connectionString"]
+      }
+    },
+    {
+      "name": "sqlite",
+      "displayName": "SQLite Database",
+      "description": "Query SQLite databases",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-sqlite",
+      "tags": ["database", "sqlite", "sql"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite",
+      "repository": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "name": "puppeteer",
+      "displayName": "Puppeteer Browser",
+      "description": "Browser automation with Puppeteer",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-puppeteer",
+      "tags": ["browser", "automation", "web"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer",
+      "repository": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "name": "fetch",
+      "displayName": "HTTP Fetch",
+      "description": "Fetch web pages and APIs",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-fetch",
+      "tags": ["http", "web", "api"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/fetch",
+      "repository": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "name": "brave-search",
+      "displayName": "Brave Search",
+      "description": "Search the web using Brave Search API",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-brave-search",
+      "tags": ["search", "web", "api"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search",
+      "repository": "https://github.com/modelcontextprotocol/servers",
+      "requiredEnv": ["BRAVE_API_KEY"]
+    },
+    {
+      "name": "google-maps",
+      "displayName": "Google Maps",
+      "description": "Access Google Maps API for location services",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-google-maps",
+      "tags": ["maps", "location", "api"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/google-maps",
+      "repository": "https://github.com/modelcontextprotocol/servers",
+      "requiredEnv": ["GOOGLE_MAPS_API_KEY"]
+    },
+    {
+      "name": "slack",
+      "displayName": "Slack Integration",
+      "description": "Interact with Slack workspaces",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-slack",
+      "tags": ["slack", "messaging", "api"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/slack",
+      "repository": "https://github.com/modelcontextprotocol/servers",
+      "requiredEnv": ["SLACK_BOT_TOKEN"]
+    },
+    {
+      "name": "memory",
+      "displayName": "Knowledge Graph Memory",
+      "description": "Persistent memory using knowledge graphs",
+      "version": "1.0.0",
+      "author": "Model Context Protocol",
+      "package": "@modelcontextprotocol/server-memory",
+      "tags": ["memory", "knowledge-graph", "persistence"],
+      "runtime": "node",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory",
+      "repository": "https://github.com/modelcontextprotocol/servers"
+    }
+  ]
+}

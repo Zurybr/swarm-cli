@@ -19,6 +19,7 @@ import { createContextCommand } from '../context/cli';
 import { createGSDCommand } from '../gsd/cli';
 import { createHivemindCommand } from '../hive/cli';
 import { registerExpertCommands } from '../skills/expert-definitions/cli';
+import { createMCPCommand } from './commands/mcp';
 import sqlite3 from 'sqlite3';
 
 const logger = new Logger('CLI');
@@ -211,6 +212,9 @@ program.addCommand(createContextCommand());
 
 // GSD project management commands
 program.addCommand(createGSDCommand());
+
+// MCP marketplace commands
+program.addCommand(createMCPCommand());
 
 // Skill, agent, and expert commands - initialized asynchronously
 (async () => {

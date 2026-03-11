@@ -251,51 +251,72 @@ export interface RoutingRule {
 
 // ============================================================================
 // MCP Types - Issue #24
+// Re-exported from integrations/mcp/types.ts for backward compatibility
 // ============================================================================
 
-export interface MCPServerConfig {
-  name: string;
-  command: string;
-  args: string[];
-  env?: Record<string, string>;
-}
+// Re-export all MCP types from the integration module
+export {
+  // Server Configuration
+  MCPServerConfig,
+  
+  // JSON-RPC Types
+  JSONRPCRequest,
+  JSONRPCResponse,
+  JSONRPCError,
+  JSONRPCNotification,
+  
+  // MCP Protocol Types
+  MCPInitializeParams,
+  MCPInitializeResult,
+  MCPCapabilities,
+  MCPClientInfo,
+  MCPServerInfo,
+  
+  // Tool Types
+  MCPTool,
+  MCPInputSchema,
+  MCPPropertySchema,
+  MCPToolCallParams,
+  MCPToolResult,
+  MCPContent,
+  MCPResourceReference,
+  
+  // Resource Types
+  MCPResource,
+  MCPResourceContent,
+  MCPResourceReadParams,
+  
+  // Prompt Types
+  MCPPrompt,
+  MCPPromptArgument,
+  MCPPromptGetParams,
+  MCPPromptResult,
+  MCPPromptMessage,
+  
+  // Client Interface
+  MCPClient,
+  
+  // Transport Interface
+  MCPTransport,
+  
+  // Configuration Types
+  MCPConfig,
+  SwarmConfig as MCPSwarmConfig,
+  
+  // Integration Types
+  MCPToolRegistration,
+  MCPIntegrationOptions,
+  
+  // Error Types
+  MCPError,
+  MCPConnectionError,
+  MCPTimeoutError,
+  MCPToolNotFoundError,
+  MCPResourceNotFoundError,
+} from '../integrations/mcp/types';
 
-export interface MCPClient {
-  connect(server: MCPServerConfig): Promise<void>;
-  disconnect(): void;
-  listTools(): Promise<MCPTool[]>;
-  callTool(name: string, args: any): Promise<MCPResult>;
-  listResources(): Promise<MCPResource[]>;
-  readResource(uri: string): Promise<MCPResourceContent>;
-}
-
-export interface MCPTool {
-  name: string;
-  description: string;
-  inputSchema: JSONSchema;
-}
-
-export interface MCPResult {
-  content: Array<{
-    type: 'text' | 'image';
-    text?: string;
-    data?: string;
-  }>;
-  isError?: boolean;
-}
-
-export interface MCPResource {
-  uri: string;
-  name: string;
-  mimeType?: string;
-}
-
-export interface MCPResourceContent {
-  uri: string;
-  mimeType: string;
-  text?: string;
-  blob?: string;
-}
+// Legacy type aliases for backward compatibility
+export type MCPResult = import('../integrations/mcp/types').MCPToolResult;
 
 // ============================================================================
 // Hivemind Types - Issue #26
