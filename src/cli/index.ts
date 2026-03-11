@@ -59,7 +59,10 @@ program
   .option('--retry-delay <ms>', 'Delay inicial entre reintentos (ms)', '1000')
   .option('--retry-max-delay <ms>', 'Delay máximo entre reintentos (ms)', '30000')
   .option('--retry-multiplier <n>', 'Multiplicador de backoff', '2')
-  .option('--streaming-on', 'Enable streaming output for LLM responses', false);
+  .option('--streaming-on', 'Enable streaming output for LLM responses', false)
+  .option('--dynamic-temperature-enabled', 'Enable dynamic temperature adjustment', false)
+  .option('--temperature-profile <profile>', 'Temperature profile: coding|balanced|creative|research', 'balanced')
+  .option('--temperature <n>', 'Override temperature (0.0-2.0)');
 
 // Interactive mode (default for humans)
 program
