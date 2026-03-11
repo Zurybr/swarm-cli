@@ -32,7 +32,7 @@ export class OllamaEmbeddingBackend implements EmbeddingBackend {
       throw new Error(`Ollama embedding error: ${await response.text()}`);
     }
     
-    const data = await response.json();
+    const data = await response.json() as { embedding: number[] };
     return data.embedding;
   }
   
@@ -71,7 +71,7 @@ export class OpenAIEmbeddingBackend implements EmbeddingBackend {
       throw new Error(`OpenAI embedding error: ${await response.text()}`);
     }
     
-    const data = await response.json();
+    const data = await response.json() as { data: Array<{ embedding: number[] }> };
     return data.data[0].embedding;
   }
   
