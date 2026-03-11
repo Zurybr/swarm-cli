@@ -552,3 +552,69 @@ export interface TDDEvent {
  * Event handler function
  */
 export type TDDEventHandler = (event: TDDEvent) => void | Promise<void>;
+
+// ============================================================================
+// TDD Executor Types (Issue #10)
+// ============================================================================
+
+/**
+ * Individual test result from a test run
+ */
+export interface TestResult {
+  /** Test name */
+  name: string;
+  /** Whether the test passed */
+  passed: boolean;
+  /** Duration in milliseconds */
+  duration: number;
+  /** Error message if failed */
+  error?: string;
+}
+
+/**
+ * Test case for TDD executor
+ */
+export interface TDDExecutorTestCase {
+  /** Test name */
+  name: string;
+  /** Test description */
+  description: string;
+  /** Input for the test */
+  input: unknown;
+  /** Expected output */
+  expectedOutput: unknown;
+}
+
+/**
+ * Task for TDD executor to process
+ */
+export interface TDDTask {
+  /** Task name */
+  name: string;
+  /** Task description */
+  description?: string;
+  /** Files involved (test file and implementation file) */
+  files: string[];
+  /** Test cases to implement */
+  testCases: TDDExecutorTestCase[];
+  /** Command to verify tests */
+  verifyCommand: string;
+}
+
+/**
+ * Result from TDD executor
+ */
+export interface TDDResult {
+  /** Current phase */
+  phase: 'red' | 'green' | 'refactor';
+  /** Test results */
+  testResults: TestResult[];
+  /** Coverage percentage */
+  coverage: number;
+  /** Commit messages made */
+  commits: string[];
+  /** Total duration in milliseconds */
+  duration: number;
+  /** Error message if failed */
+  error?: string;
+}

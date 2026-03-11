@@ -660,5 +660,6 @@ export * from './template';
 export { TDDCycleManager, CycleStatistics as TDDCycleStatistics } from './cycle';
 export { CoverageManager, TrendDataPoint } from './coverage';
 export { TestGenerator, TestGenerationConfig, AnalyzedClass, AnalyzedMethod } from './generator';
+export { TDDExecutor, JestTestRunner, TestRunner, TestRunResult } from './tdd-executor';
 
 export { TDDSystem as default } from './index';
