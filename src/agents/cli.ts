@@ -116,8 +116,27 @@ export function createAgentsCommand(): Command {
     .command('create <type>')
     .description('Create a new agent instance')
     .option('-n, --name <name>', 'Custom name for the agent')
+    .option('-c, --config <path>', 'Load agent from YAML config file')
     .option('-j, --json', 'Output as JSON')
     .action(async (type: string, options) => {
+      // If config is provided, load from YAML
+      if (options.config) {
+        const { loadAgentConfig } = await import('./yaml-config');
+        try {
+          const config = loadAgentConfig(options.config);
+          console.log(chalk.green(`✅ Loaded agent config: ${config.name}`));
+          console.log(chalk.gray(`  Description: ${config.description}`));
+          console.log(chalk.gray(`  Division: ${config.division}`));
+          if (options.json) {
+            console.log(JSON.stringify(config, null, 2));
+          }
+          return;
+        } catch (error) {
+          console.error(chalk.red(`Failed to load config: ${error}`));
+          process.exit(1);
+        }
+      }
+
       if (!ALL_AGENT_TYPES.includes(type as AgentType)) {
         console.error(chalk.red(`Unknown agent type: ${type}`));
         console.log(`Available types: ${ALL_AGENT_TYPES.join(', ')}`);
