@@ -54,7 +54,11 @@ async function initializeSkillRegistry(): Promise<SkillRegistry> {
 program
   .name('swarm-cli')
   .description('Orquestación de agentes - Specs a proyectos funcionales')
-  .version('0.1.0');
+  .version('0.1.0')
+  .option('--retry-attempts <n>', 'Número máximo de reintentos', '3')
+  .option('--retry-delay <ms>', 'Delay inicial entre reintentos (ms)', '1000')
+  .option('--retry-max-delay <ms>', 'Delay máximo entre reintentos (ms)', '30000')
+  .option('--retry-multiplier <n>', 'Multiplicador de backoff', '2');
 
 // Interactive mode (default for humans)
 program
