@@ -20,6 +20,7 @@ import { createGSDCommand } from '../gsd/cli';
 import { createHivemindCommand } from '../hive/cli';
 import { registerExpertCommands } from '../skills/expert-definitions/cli';
 import { createMCPCommand } from './commands/mcp';
+import { launchTUI } from '../tui';
 import sqlite3 from 'sqlite3';
 
 const logger = new Logger('CLI');
@@ -93,6 +94,15 @@ program
   .action((options) => {
     const port = parseInt(options.port, 10);
     createAPIServer(port);
+  });
+
+// TUI mode - Terminal User Interface
+program
+  .command('tui')
+  .description('Launch Terminal User Interface')
+  .option('-t, --title <title>', 'TUI title', 'Swarm CLI')
+  .action((options) => {
+    launchTUI({ title: options.title });
   });
 
 // Init command
