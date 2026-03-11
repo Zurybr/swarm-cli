@@ -1,0 +1,26 @@
+{
+  "name": "@swarm-cli/mcp-websearch",
+  "version": "1.0.0",
+  "description": "Web Search MCP server for Swarm CLI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "swarm-websearch-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.x",
+    "cheerio": "^1.x"
+  },
+  "keywords": [
+    "mcp",
+    "web-search",
+    "duckduckgo",
+    "swarm-cli"
+  ],
+  "license": "MIT"
+}
