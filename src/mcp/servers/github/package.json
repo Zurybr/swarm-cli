@@ -1,0 +1,25 @@
+{
+  "name": "@swarm-cli/mcp-github",
+  "version": "1.0.0",
+  "description": "GitHub MCP server for Swarm CLI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "swarm-github-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.x",
+    "@octokit/rest": "^20.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "github",
+    "swarm-cli"
+  ],
+  "license": "MIT"
+}
