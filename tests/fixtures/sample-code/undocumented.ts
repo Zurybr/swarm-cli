@@ -1,4 +1,4 @@
-//**
+/**
  * Sample undocumented code for testing documentation analysis
  * Contains functions with missing or incomplete JSDoc
  */

@@ -1,4 +1,4 @@
-//**
+/**
  * Sample complex code for testing performance analysis
  * Contains functions with high cyclomatic complexity and long functions
  */
