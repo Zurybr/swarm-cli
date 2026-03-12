@@ -1,0 +1,92 @@
+# Swarm CLI Theme Configuration
+# Select a built-in theme or customize colors
+
+# Available built-in themes:
+# - tokyo-night: Blue/purple dark theme
+# - dracula: Purple/green dark theme
+# - nord: Blue/cyan cold theme
+# - solarized-dark: Classic solarized dark
+# - solarized-light: Classic solarized light
+
+theme:
+  # Theme name (built-in or custom)
+  name: "tokyo-night"
+  
+  # Optional: Override specific colors
+  # Uncomment to customize individual colors
+  # colors:
+  #   primary: "#7aa2f7"
+  #   secondary: "#bb9af7"
+  #   success: "#9ece6a"
+  #   warning: "#e0af68"
+  #   error: "#f7768e"
+  #   background: "#1a1b26"
+  #   foreground: "#c0caf5"
+  
+  # Optional: Customize component styles
+  # components:
+  #   task:
+  #     pending:
+  #       color: "#565f89"
+  #       modifier: "dim"
+  #       icon: "○"
+  #     running:
+  #       color: "#e0af68"
+  #       modifier: "bold"
+  #       icon: "◐"
+  #     completed:
+  #       color: "#9ece6a"
+  #       icon: "●"
+  #     failed:
+  #       color: "#f7768e"
+  #       icon: "✗"
+  #     blocked:
+  #       color: "#ff9e64"
+  #       icon: "⊘"
+  #     cancelled:
+  #       color: "#565f89"
+  #       modifier: "strikethrough"
+  #       icon: "⊘"
+
+# Example: Dracula theme configuration
+# theme:
+#   name: "dracula"
+#   colors:
+#     primary: "#bd93f9"
+#     secondary: "#ff79c6"
+#     success: "#50fa7b"
+#     warning: "#ffb86c"
+#     error: "#ff5555"
+#     background: "#282a36"
+#     foreground: "#f8f8f2"
+
+# Example: Nord theme configuration
+# theme:
+#   name: "nord"
+#   colors:
+#     primary: "#88c0d0"
+#     secondary: "#81a1c1"
+#     success: "#a3be8c"
+#     warning: "#ebcb8b"
+#     error: "#bf616a"
+#     background: "#2e3440"
+#     foreground: "#d8dee9"
+
+# Example: Solarized Dark theme configuration
+# theme:
+#   name: "solarized-dark"
+#   colors:
+#     primary: "#268bd2"
+#     secondary: "#6c71c4"
+#     success: "#859900"
+#     warning: "#b58900"
+#     error: "#dc322f"
+#     background: "#002b36"
+#     foreground: "#93a1a1"
+
+# Example: Custom theme extending built-in
+# theme:
+#   name: "tokyo-night"  # Base theme
+#   colors:
+#     primary: "#ff6b35"  # Override primary to orange
+#     background: "#0f0f14"  # Darker background

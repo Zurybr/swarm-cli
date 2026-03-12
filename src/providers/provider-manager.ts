@@ -16,6 +16,7 @@ import {
 import { AnthropicProvider } from './anthropic-provider';
 import { OpenAIProvider } from './openai-provider';
 import { OllamaProvider } from './ollama-provider';
+import { GoogleProvider } from './google-provider';
 
 export class ProviderManager {
   private providers: Map<ProviderName, Provider> = new Map();
@@ -25,7 +26,7 @@ export class ProviderManager {
     this.routingConfig = {
       defaultProvider: 'anthropic',
       defaultModel: 'claude-3-sonnet-20240229',
-      fallbackChain: ['anthropic', 'openai', 'ollama'],
+      fallbackChain: ['anthropic', 'openai', 'google', 'ollama'],
       routingRules: [],
       ...config
     };
@@ -45,6 +46,7 @@ export class ProviderManager {
     anthropicApiKey?: string;
     openaiApiKey?: string;
     ollamaBaseUrl?: string;
+    googleApiKey?: string;
   } = {}): void {
     if (config.anthropicApiKey) {
       this.registerProvider(new AnthropicProvider({ apiKey: config.anthropicApiKey }));
@@ -54,7 +56,64 @@ export class ProviderManager {
       this.registerProvider(new OpenAIProvider({ apiKey: config.openaiApiKey }));
     }
     
+    if (config.googleApiKey) {
+      this.registerProvider(new GoogleProvider({ apiKey: config.googleApiKey }));
+    }
+    
     this.registerProvider(new OllamaProvider({ baseUrl: config.ollamaBaseUrl }));
+  }
+  
+  /**
+   * Auto-detecta y registra proveedores basado en variables de entorno
+   */
+  async autoRegisterProviders(): Promise<void> {
+    // Anthropic
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    if (anthropicKey) {
+      this.registerProvider(new AnthropicProvider({ apiKey: anthropicKey }));
+    }
+    
+    // OpenAI
+    const openaiKey = process.env.OPENAI_API_KEY;
+    if (openaiKey) {
+      this.registerProvider(new OpenAIProvider({ apiKey: openaiKey }));
+    }
+    
+    // Google
+    const googleKey = await GoogleProvider.detectApiKey();
+    if (googleKey) {
+      this.registerProvider(new GoogleProvider({ apiKey: googleKey }));
+    }
+    
+    // Ollama (always register, will fail gracefully if not available)
+    this.registerProvider(new OllamaProvider());
+  }
+  
+  /**
+   * Detecta qué proveedores están disponibles
+   */
+  async detectAvailableProviders(): Promise<ProviderName[]> {
+    const available: ProviderName[] = [];
+    
+    if (process.env.ANTHROPIC_API_KEY) {
+      available.push('anthropic');
+    }
+    
+    if (process.env.OPENAI_API_KEY) {
+      available.push('openai');
+    }
+    
+    if (await GoogleProvider.isAvailable()) {
+      available.push('google');
+    }
+    
+    // Check Ollama availability
+    const ollama = this.providers.get('ollama') as OllamaProvider | undefined;
+    if (ollama && await ollama.isAvailable()) {
+      available.push('ollama');
+    }
+    
+    return available;
   }
   
   /**
