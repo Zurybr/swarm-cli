@@ -20,6 +20,9 @@ import { createGSDCommand } from '../gsd/cli';
 import { createHivemindCommand } from '../hive/cli';
 import { registerExpertCommands } from '../skills/expert-definitions/cli';
 import { createMCPCommand } from './commands/mcp';
+import { createModelCommand } from './commands/model';
+import { createCostsCommand } from '../providers';
+import { launchTUI } from '../tui';
 import sqlite3 from 'sqlite3';
 
 const logger = new Logger('CLI');
@@ -93,6 +96,15 @@ program
   .action((options) => {
     const port = parseInt(options.port, 10);
     createAPIServer(port);
+  });
+
+// TUI mode - Terminal User Interface
+program
+  .command('tui')
+  .description('Launch Terminal User Interface')
+  .option('-t, --title <title>', 'TUI title', 'Swarm CLI')
+  .action((options) => {
+    launchTUI({ title: options.title });
   });
 
 // Init command
@@ -215,6 +227,12 @@ program.addCommand(createGSDCommand());
 
 // MCP marketplace commands
 program.addCommand(createMCPCommand());
+
+// Model configuration commands - Issue #22.3
+program.addCommand(createModelCommand());
+
+// Cost tracking commands - Issue #22.6
+program.addCommand(createCostsCommand());
 
 // Skill, agent, and expert commands - initialized asynchronously
 (async () => {
