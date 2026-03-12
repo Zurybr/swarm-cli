@@ -94,6 +94,7 @@ describe('CoverageManager', () => {
   describe('getAllReports', () => {
     it('should return all reports', async () => {
       await manager.runCoverage();
+      await new Promise(resolve => setTimeout(resolve, 10));
       await manager.runCoverage();
 
       const reports = manager.getAllReports();
