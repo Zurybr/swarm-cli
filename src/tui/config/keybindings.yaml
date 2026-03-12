@@ -1,0 +1,203 @@
+# Swarm CLI Keybindings Configuration
+# =====================================
+# Customize keyboard shortcuts for the TUI interface.
+# This file allows you to override default keybindings or add new ones.
+#
+# Usage:
+#   1. Copy this file to ~/.config/swarm-cli/keybindings.yaml
+#   2. Edit the bindings as needed
+#   3. Restart the TUI to apply changes
+#
+# Key Format:
+#   - Single keys: 'a', '1', '?', 'space', 'enter', 'tab'
+#   - Modifiers: 'ctrl+c', 'shift+tab', 'alt+h'
+#   - Arrows: 'upArrow', 'downArrow', 'leftArrow', 'rightArrow'
+#   - Special: 'escape', 'backspace', 'delete', 'home', 'end'
+#   - Sequences: 'gg', 'ZZ', 'z+o' (for multi-key bindings)
+
+# Preset: Choose a base preset to extend
+# Options: 'default', 'vim'
+preset: default
+
+# Global keybindings (always active)
+# These work in any view/mode
+global:
+  # Override existing bindings
+  - key: "ctrl+c"
+    action: cancel
+    description: "Cancel current operation"
+    enabled: true
+  
+  - key: "ctrl+d"
+    action: exit
+    description: "Exit application"
+    enabled: true
+  
+  - key: "?"
+    action: showHelp
+    description: "Show help screen"
+    enabled: true
+  
+  - key: "tab"
+    action: switchAgent
+    description: "Switch between build/plan agents"
+    enabled: true
+  
+  # Add custom global bindings
+  # - key: "ctrl+h"
+  #   action: showHistory
+  #   description: "Show command history"
+
+# Navigation keybindings
+navigation:
+  - key: "j"
+    action: moveDown
+    description: "Move selection down"
+    enabled: true
+  
+  - key: "k"
+    action: moveUp
+    description: "Move selection up"
+    enabled: true
+  
+  - key: "h"
+    action: moveLeft
+    description: "Move selection left"
+    enabled: true
+  
+  - key: "l"
+    action: moveRight
+    description: "Move selection right"
+    enabled: true
+  
+  - key: "enter"
+    action: select
+    description: "Select/open item"
+    enabled: true
+  
+  - key: "q"
+    action: quitView
+    description: "Quit/close current view"
+    enabled: true
+
+# Plan view specific keybindings
+planView:
+  - key: "space"
+    action: toggleDetails
+    description: "Toggle task details"
+    enabled: true
+  
+  - key: "r"
+    action: refresh
+    description: "Refresh plan status"
+    enabled: true
+  
+  - key: "l"
+    action: viewLogs
+    description: "View task logs"
+    enabled: true
+  
+  - key: "a"
+    action: abortPlan
+    description: "Abort plan execution"
+    enabled: true
+  
+  - key: "p"
+    action: togglePause
+    description: "Pause/resume execution"
+    enabled: true
+
+# Kanban board keybindings
+kanban:
+  - key: "tab"
+    action: nextColumn
+    description: "Move to next column"
+    enabled: true
+  
+  - key: "m"
+    action: moveTask
+    description: "Move selected task"
+    enabled: true
+  
+  - key: "n"
+    action: newTask
+    description: "Create new task"
+    enabled: true
+  
+  - key: "d"
+    action: deleteTask
+    description: "Delete selected task"
+    enabled: true
+  
+  - key: "e"
+    action: editTask
+    description: "Edit selected task"
+    enabled: true
+
+# Input mode keybindings
+input:
+  - key: "enter"
+    action: submit
+    description: "Submit input"
+    enabled: true
+  
+  - key: "ctrl+a"
+    action: cursorHome
+    description: "Move cursor to start"
+    enabled: true
+  
+  - key: "ctrl+e"
+    action: cursorEnd
+    description: "Move cursor to end"
+    enabled: true
+  
+  - key: "ctrl+w"
+    action: deleteWord
+    description: "Delete word before cursor"
+    enabled: true
+
+# Custom keybindings (define your own actions)
+# These will be available but need to be handled in your code
+custom:
+  # Example: Add a quick search shortcut
+  # - key: "/"
+  #   action: quickSearch
+  #   description: "Quick search tasks"
+  #   context: global
+  
+  # Example: Add view-specific custom action
+  # - key: "ctrl+s"
+  #   action: saveView
+  #   description: "Save current view state"
+  #   context: planView
+
+# Disabled bindings list
+# List action names to disable globally
+disabledActions: []
+  # - action: deleteTask  # Uncomment to disable task deletion
+
+# Keybinding profiles
+# Switch between different keybinding sets
+profiles:
+  # Minimal profile - essential keys only
+  minimal:
+    preset: default
+    disabledActions:
+      - moveLeft
+      - moveRight
+      - gotoTodo
+      - gotoInProgress
+      - gotoDone
+  
+  # Emacs-style profile (coming soon)
+  # emacs:
+  #   preset: default
+  #   custom:
+  #     - key: "ctrl+p"
+  #       action: moveUp
+  #     - key: "ctrl+n"
+  #       action: moveDown
+  #     - key: "ctrl+b"
+  #       action: moveLeft
+  #     - key: "ctrl+f"
+  #       action: moveRight
