@@ -91,3 +91,53 @@ export type {
   StrategyOptions,
   TaskRoutingConfig
 } from './routing-strategies';
+
+// Cost Tracking - Issue #22.6
+export {
+  CostTracker,
+  getCostTracker,
+  resetCostTracker
+} from './cost-tracker';
+export type {
+  CostRecord,
+  TrackRequestOptions,
+  CostSummary,
+  ProviderCostSummary,
+  ModelCostSummary,
+  AgentCostSummary,
+  CostFilterOptions
+} from './cost-tracker';
+
+// Budget Management - Issue #22.6
+export {
+  BudgetManager,
+  getBudgetManager,
+  resetBudgetManager
+} from './budget-manager';
+export type {
+  BudgetConfig,
+  BudgetAlertConfig,
+  BudgetStatus,
+  BudgetAlert,
+  BudgetProgress,
+  BudgetCheckResult,
+  AlertHandler
+} from './budget-manager';
+
+// Agent Model Configuration - Issue #22.3
+export {
+  AgentModelConfig,
+  createAgentModelConfig,
+  ModelValidationError
+} from './agent-model-config';
+export type {
+  AgentType,
+  AgentModelMapping,
+  AgentModelConfigMap,
+  AgentModelConfigOptions,
+  SetModelOptions,
+  CliOverrideOptions
+} from './agent-model-config';
+
+// Cost Reporting CLI - Issue #22.6
+export { createCostsCommand } from './costs-cli';

@@ -20,6 +20,8 @@ import { createGSDCommand } from '../gsd/cli';
 import { createHivemindCommand } from '../hive/cli';
 import { registerExpertCommands } from '../skills/expert-definitions/cli';
 import { createMCPCommand } from './commands/mcp';
+import { createModelCommand } from './commands/model';
+import { createCostsCommand } from '../providers';
 import { launchTUI } from '../tui';
 import sqlite3 from 'sqlite3';
 
@@ -225,6 +227,12 @@ program.addCommand(createGSDCommand());
 
 // MCP marketplace commands
 program.addCommand(createMCPCommand());
+
+// Model configuration commands - Issue #22.3
+program.addCommand(createModelCommand());
+
+// Cost tracking commands - Issue #22.6
+program.addCommand(createCostsCommand());
 
 // Skill, agent, and expert commands - initialized asynchronously
 (async () => {
