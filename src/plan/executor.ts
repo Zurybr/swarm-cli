@@ -187,7 +187,7 @@ async function executeTask(
         taskId: task.id,
         percent: basePercent + 10,
         message: `[DRY RUN] Completed: ${task.name}`,
-        timestamp: result.endTime,
+        timestamp: result.endTime ?? new Date(),
       });
 
       return result;

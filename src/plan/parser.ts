@@ -250,11 +250,46 @@ function parseYamlLike(
         currentSubSection = 'artifacts';
       } else if (trimmed.startsWith('key_links:')) {
         currentSubSection = 'key_links';
+      } else if (trimmed.startsWith('user_setup:')) {
+        currentSubSection = 'user_setup';
       } else if (indentLevel >= 2 && trimmed.startsWith('- ')) {
         const item = trimmed.substring(2).trim();
 
         if (currentSubSection === 'truths') {
           mustHaves.truths.push(item.replace(/['"]/g, ''));
+        } else if (currentSubSection === 'artifacts' && item.includes(':')) {
+          // Nested artifact property (e.g., "path: src/foo.ts")
+          const colonIdx = item.indexOf(':');
+          const propKey = item.substring(0, colonIdx).trim();
+          const propValue = item.substring(colonIdx + 1).trim().replace(/['"]/g, '');
+          
+          const currentArtifact = mustHaves.artifacts[mustHaves.artifacts.length - 1];
+          if (currentArtifact) {
+            if (propKey === 'path') currentArtifact.path = propValue;
+            else if (propKey === 'provides') currentArtifact.provides = propValue;
+            else if (propKey === 'exports') currentArtifact.exports = propValue.split(',').map(s => s.trim());
+            else if (propKey === 'min_lines') currentArtifact.minLines = parseInt(propValue, 10);
+            else if (propKey === 'contains') currentArtifact.contains = propValue;
+          }
+        } else if (currentSubSection === 'artifacts' && !item.includes(':')) {
+          // New artifact entry
+          mustHaves.artifacts.push({ path: item.replace(/['"]/g, ''), provides: '' });
+        } else if (currentSubSection === 'key_links' && item.includes(':')) {
+          // Nested key_link property
+          const colonIdx = item.indexOf(':');
+          const propKey = item.substring(0, colonIdx).trim();
+          const propValue = item.substring(colonIdx + 1).trim().replace(/['"]/g, '');
+          
+          const currentLink = mustHaves.key_links[mustHaves.key_links.length - 1];
+          if (currentLink) {
+            if (propKey === 'from') currentLink.from = propValue;
+            else if (propKey === 'to') currentLink.to = propValue;
+            else if (propKey === 'via') currentLink.via = propValue;
+            else if (propKey === 'pattern') currentLink.pattern = propValue;
+          }
+        } else if (currentSubSection === 'key_links' && !item.includes(':')) {
+          // New key_link entry
+          mustHaves.key_links.push({ from: '', to: '', via: '' });
         }
       }
     }
@@ -567,6 +602,70 @@ function getLineNumber(content: string, index: number): number {
 }
 
 // ============================================================================
+// @-Reference Resolution
+// ============================================================================
+
+const fileCache = new Map<string, string>();
+
+export interface ResolveContextOptions {
+  projectRoot: string;
+  cache?: boolean;
+}
+
+export async function resolveContextReferences(
+  context: string[],
+  options: ResolveContextOptions
+): Promise<Record<string, string>> {
+  const resolved: Record<string, string> = {};
+  const cache = options.cache !== false;
+
+  for (const ref of context) {
+    const resolvedPath = resolveRefPath(ref, options.projectRoot);
+    
+    if (resolvedPath) {
+      try {
+        let content: string | undefined;
+        
+        if (cache && fileCache.has(resolvedPath)) {
+          content = fileCache.get(resolvedPath);
+        } else {
+          const fs = await import('fs/promises');
+          content = await fs.readFile(resolvedPath, 'utf-8');
+          if (cache) {
+            fileCache.set(resolvedPath, content);
+          }
+        }
+        
+        if (content) {
+          resolved[ref] = content;
+        }
+      } catch {
+        resolved[ref] = `[File not found: ${resolvedPath}]`;
+      }
+    }
+  }
+
+  return resolved;
+}
+
+function resolveRefPath(ref: string, projectRoot: string): string | null {
+  if (ref.startsWith('@.')) {
+    const relativePath = ref.substring(2);
+    return `${projectRoot}/${relativePath}`;
+  } else if (ref.startsWith('@')) {
+    const relativePath = ref.substring(1);
+    return `${projectRoot}/${relativePath}`;
+  } else if (ref.startsWith('/')) {
+    return ref;
+  }
+  return `${projectRoot}/${ref}`;
+}
+
+export function clearContextCache(): void {
+  fileCache.clear();
+}
+
+// ============================================================================
 // Export Parser Class
 // ============================================================================
 
@@ -586,9 +685,19 @@ export class PlanParser {
    * (Node.js environment only)
    */
   async parseFile(filePath: string): Promise<ParseResult> {
-    // Dynamic import to avoid issues in browser environments
     const fs = await import('fs/promises');
     const content = await fs.readFile(filePath, 'utf-8');
     return this.parse(content, filePath);
+  }
+
+  /**
+   * Resolve @-references in context and populate contextResolved
+   */
+  async resolveContext(plan: Plan, projectRoot: string): Promise<Plan> {
+    const resolved = await resolveContextReferences(plan.context, { projectRoot });
+    return {
+      ...plan,
+      contextResolved: resolved,
+    };
   }
 }

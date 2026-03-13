@@ -34,6 +34,7 @@ export type {
   PlanTask,
   ArtifactDefinition,
   KeyLink,
+  UserSetup,
 
   // Parser types
   ParseResult,
@@ -62,11 +63,18 @@ export type {
   PlanValidateOptions,
 } from './types.js';
 
+// Export JSON Schemas
+export {
+  PLAN_FRONTMATTER_JSON_SCHEMA,
+  PLAN_TASK_JSON_SCHEMA,
+} from './types.js';
+
 // ============================================================================
 // Class Exports
 // ============================================================================
 
 export { PlanParser } from './parser';
+export { resolveContextReferences, clearContextCache } from './parser';
 export { PlanValidator } from './validator';
 export { PlanExecutor } from './executor';
 export { PromptBuilder, planToPrompt, planToPromptSync } from './prompt';
