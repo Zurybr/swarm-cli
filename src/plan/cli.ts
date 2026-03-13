@@ -13,6 +13,7 @@ import { PlanParser } from './parser';
 import { PlanValidator } from './validator';
 import { PlanExecutor } from './executor';
 import type {
+  Plan,
   PlanExecuteOptions,
   PlanValidateOptions,
   ExecutionContext,
@@ -24,7 +25,18 @@ import type {
 // ANSI Color Helpers (avoid ESM chalk issues)
 // ============================================================================
 
-const colors = {
+interface Colors {
+  red: (text: string) => string;
+  green: (text: string) => string;
+  yellow: (text: string) => string;
+  blue: (text: string) => string;
+  magenta: (text: string) => string;
+  cyan: (text: string) => string;
+  gray: (text: string) => string;
+  bold: (text: string) => string;
+}
+
+const colors: Colors = {
   red: (text: string) => `\x1b[31m${text}\x1b[0m`,
   green: (text: string) => `\x1b[32m${text}\x1b[0m`,
   yellow: (text: string) => `\x1b[33m${text}\x1b[0m`,
@@ -82,6 +94,16 @@ export function createPlanCommand(): Command {
     .argument('<file>', 'Path to PLAN.md file')
     .option('-f, --format <format>', 'Output format (human|json)', 'human')
     .action(handleList);
+
+  // Template command
+  planCmd
+    .command('template')
+    .description('Generate a PLAN.md template')
+    .option('-p, --phase <phase>', 'Phase identifier (e.g., 03-features)', '01')
+    .option('-n, --plan <plan>', 'Plan number (e.g., 02)', '01')
+    .option('-t, --type <type>', 'Plan type (execute|research|design)', 'execute')
+    .option('-o, --output <file>', 'Output file path')
+    .action(handleTemplate);
 
   return planCmd;
 }
@@ -281,14 +303,93 @@ async function handleList(file: string, options: { format: string }): Promise<vo
   }
 }
 
+interface TemplateOptions {
+  phase: string;
+  plan: string;
+  type: string;
+  output?: string;
+}
+
+async function handleTemplate(options: TemplateOptions): Promise<void> {
+  const template = generateTemplate(options.phase, options.plan, options.type);
+  
+  if (options.output) {
+    try {
+      await fs.writeFile(options.output, template, 'utf-8');
+      console.log(colors.green(`Template created: ${options.output}`));
+    } catch (error) {
+      console.error(colors.red(`Error writing file: ${error instanceof Error ? error.message : error}`));
+      process.exit(1);
+    }
+  } else {
+    console.log(template);
+  }
+}
+
+function generateTemplate(phase: string, plan: string, type: string): string {
+  const phaseName = phase.startsWith('01') ? 'foundation' :
+                   phase.startsWith('02') ? 'research' :
+                   phase.startsWith('03') ? 'features' :
+                   phase.startsWith('04') ? 'optimization' :
+                   phase.startsWith('05') ? 'launch' : 'unknown';
+  
+  return `---
+phase: ${phase}-${phaseName}
+plan: ${plan}
+type: ${type}
+wave: 1
+depends_on: []
+files_modified: []
+autonomous: true
+requirements: []
+must_haves:
+  truths: []
+  artifacts: []
+  key_links: []
+---
+
+<objective>
+Enter the plan objective here - what should be accomplished?
+</objective>
+
+<context>
+@.planning/ROADMAP.md
+@.planning/STATE.md
+</context>
+
+<tasks>
+
+<task type="auto">
+  <name>Task 1: [Action name]</name>
+  <files>src/path/to/file.ts</files>
+  <action>
+Describe what to do in this task.
+  </action>
+  <verify>Command or check to verify</verify>
+  <done>Measurable completion criteria</done>
+</task>
+
+</tasks>
+
+<verification>
+- [ ] Verification item 1
+- [ ] Verification item 2
+</verification>
+
+<success_criteria>
+Describe the success criteria for this plan.
+</success_criteria>
+`;
+}
+
 // ============================================================================
 // Output Formatting
 // ============================================================================
 
-function printPlanHumanReadable(plan: ReturnType<PlanParser['parse']> extends Promise<infer R> ? (R extends { plan?: infer P } ? P : never) : never): void {
+function printPlanHumanReadable(plan: Plan): void {
   if (!plan) return;
 
-  console.log(colors.blue.bold(`Plan: ${plan.metadata.phase}-${plan.metadata.plan}`));
+  console.log(colors.bold(colors.blue(`Plan: ${plan.metadata.phase}-${plan.metadata.plan}`)));
   console.log(colors.gray(`Type: ${plan.metadata.type} | Wave: ${plan.metadata.wave} | Autonomous: ${plan.metadata.autonomous}`));
   console.log();
 
@@ -323,7 +424,7 @@ function printPlanHumanReadable(plan: ReturnType<PlanParser['parse']> extends Pr
 }
 
 function printValidationResult(validation: ReturnType<PlanValidator['validate']>): void {
-  console.log(colors.blue.bold('Validation Result'));
+  console.log(colors.bold(colors.blue('Validation Result')));
   console.log();
 
   if (validation.valid) {
@@ -413,4 +514,4 @@ function printProgressEvent(event: ProgressEvent, verbose: boolean): void {
 // Export for CLI Integration
 // ============================================================================
 
-export { handleParse, handleValidate, handleExecute, handleList };
+export { handleParse, handleValidate, handleExecute, handleList, handleTemplate };

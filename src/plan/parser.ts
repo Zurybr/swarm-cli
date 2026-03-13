@@ -250,11 +250,46 @@ function parseYamlLike(
         currentSubSection = 'artifacts';
       } else if (trimmed.startsWith('key_links:')) {
         currentSubSection = 'key_links';
+      } else if (trimmed.startsWith('user_setup:')) {
+        currentSubSection = 'user_setup';
       } else if (indentLevel >= 2 && trimmed.startsWith('- ')) {
         const item = trimmed.substring(2).trim();
 
         if (currentSubSection === 'truths') {
           mustHaves.truths.push(item.replace(/['"]/g, ''));
+        } else if (currentSubSection === 'artifacts' && item.includes(':')) {
+          // Nested artifact property (e.g., "path: src/foo.ts")
+          const colonIdx = item.indexOf(':');
+          const propKey = item.substring(0, colonIdx).trim();
+          const propValue = item.substring(colonIdx + 1).trim().replace(/['"]/g, '');
+          
+          const currentArtifact = mustHaves.artifacts[mustHaves.artifacts.length - 1];
+          if (currentArtifact) {
+            if (propKey === 'path') currentArtifact.path = propValue;
+            else if (propKey === 'provides') currentArtifact.provides = propValue;
+            else if (propKey === 'exports') currentArtifact.exports = propValue.split(',').map(s => s.trim());
+            else if (propKey === 'min_lines') currentArtifact.minLines = parseInt(propValue, 10);
+            else if (propKey === 'contains') currentArtifact.contains = propValue;
+          }
+        } else if (currentSubSection === 'artifacts' && !item.includes(':')) {
+          // New artifact entry
+          mustHaves.artifacts.push({ path: item.replace(/['"]/g, ''), provides: '' });
+        } else if (currentSubSection === 'key_links' && item.includes(':')) {
+          // Nested key_link property
+          const colonIdx = item.indexOf(':');
+          const propKey = item.substring(0, colonIdx).trim();
+          const propValue = item.substring(colonIdx + 1).trim().replace(/['"]/g, '');
+          
+          const currentLink = mustHaves.key_links[mustHaves.key_links.length - 1];
+          if (currentLink) {
+            if (propKey === 'from') currentLink.from = propValue;
+            else if (propKey === 'to') currentLink.to = propValue;
+            else if (propKey === 'via') currentLink.via = propValue;
+            else if (propKey === 'pattern') currentLink.pattern = propValue;
+          }
+        } else if (currentSubSection === 'key_links' && !item.includes(':')) {
+          // New key_link entry
+          mustHaves.key_links.push({ from: '', to: '', via: '' });
         }
       }
     }
@@ -391,10 +426,10 @@ function parseTaskAttributes(attributes: string, body: string, index: number): P
 
     switch (key) {
       case 'type':
-        if (['auto', 'manual', 'decision'].includes(value)) {
-          task.type = value as 'auto' | 'manual' | 'decision';
+        if (['auto', 'manual', 'decision'].includes(value) || value.startsWith('checkpoint:')) {
+          task.type = value as PlanTask['type'];
         } else {
-          (task.type as string) = value; // Preserve invalid value for validator to catch
+          (task.type as string) = value;
         }
         break;
       case 'tdd':
@@ -459,6 +494,96 @@ function parseTaskBody(body: string, task: PlanTask): void {
       .filter(b => b.startsWith('- '))
       .map(b => b.substring(2).trim());
   }
+
+  // Parse checkpoint-specific data for checkpoint:* task types
+  if (task.type.startsWith('checkpoint:')) {
+    task.checkpointData = parseCheckpointData(body, task.type);
+  }
+}
+
+function parseCheckpointData(body: string, taskType: string): PlanTask['checkpointData'] {
+  const data: PlanTask['checkpointData'] = {};
+
+  // Common checkpoint fields
+  const whatBuiltMatch = body.match(/<what-built>([\s\S]*?)<\/what-built>/i);
+  if (whatBuiltMatch) {
+    data.whatBuilt = cleanXmlContent(whatBuiltMatch[1]);
+  }
+
+  const howToVerifyMatch = body.match(/<how-to-verify>([\s\S]*?)<\/how-to-verify>/i);
+  if (howToVerifyMatch) {
+    data.howToVerify = cleanXmlContent(howToVerifyMatch[1]);
+  }
+
+  const resumeSignalMatch = body.match(/<resume-signal>([\s\S]*?)<\/resume-signal>/i);
+  if (resumeSignalMatch) {
+    data.resumeSignal = cleanXmlContent(resumeSignalMatch[1]);
+  }
+
+  const gateMatch = body.match(/<gate>([\s\S]*?)<\/gate>/i);
+  if (gateMatch) {
+    data.gate = cleanXmlContent(gateMatch[1]);
+  }
+
+  // checkpoint:decision specific
+  if (taskType === 'checkpoint:decision') {
+    const decisionMatch = body.match(/<decision>([\s\S]*?)<\/decision>/i);
+    if (decisionMatch) {
+      data.decision = cleanXmlContent(decisionMatch[1]);
+    }
+
+    const contextMatch = body.match(/<context>([\s\S]*?)<\/context>/i);
+    if (contextMatch) {
+      data.context = cleanXmlContent(contextMatch[1]);
+    }
+
+    const optionsMatch = body.match(/<options>([\s\S]*?)<\/options>/i);
+    if (optionsMatch) {
+      const optionsContent = optionsMatch[1];
+      const optionMatches = optionsContent.matchAll(/<option\s+id="([^"]+)"[^>]*>([\s\S]*?)<\/option>/gi);
+      data.options = Array.from(optionMatches).map(match => ({
+        id: match[1],
+        name: cleanXmlContent(match[2]),
+      }));
+    }
+  }
+
+  // checkpoint:human-action specific
+  if (taskType === 'checkpoint:human-action') {
+    const actionRequiredMatch = body.match(/<action-required>([\s\S]*?)<\/action-required>/i);
+    if (actionRequiredMatch) {
+      data.actionRequired = cleanXmlContent(actionRequiredMatch[1]);
+    }
+
+    const whyMatch = body.match(/<why>([\s\S]*?)<\/why>/i);
+    if (whyMatch) {
+      data.why = cleanXmlContent(whyMatch[1]);
+    }
+
+    const stepsMatch = body.match(/<steps>([\s\S]*?)<\/steps>/i);
+    if (stepsMatch) {
+      const stepsContent = cleanXmlContent(stepsMatch[1]);
+      data.steps = stepsContent
+        .split('\n')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+    }
+
+    const provideSecretsMatch = body.match(/<provide-secrets>([\s\S]*?)<\/provide-secrets>/i);
+    if (provideSecretsMatch) {
+      const secretsContent = cleanXmlContent(provideSecretsMatch[1]);
+      data.provideSecrets = secretsContent
+        .split('\n')
+        .map(s => s.trim())
+        .filter(s => s.length > 0)
+        .reduce((acc, secret) => {
+          acc[secret] = '';
+          return acc;
+        }, {} as Record<string, string>);
+    }
+  }
+
+  return data;
 }
 
 // ============================================================================
@@ -474,6 +599,70 @@ function cleanXmlContent(content: string): string {
 function getLineNumber(content: string, index: number): number {
   const lines = content.substring(0, index).split('\n');
   return lines.length;
+}
+
+// ============================================================================
+// @-Reference Resolution
+// ============================================================================
+
+const fileCache = new Map<string, string>();
+
+export interface ResolveContextOptions {
+  projectRoot: string;
+  cache?: boolean;
+}
+
+export async function resolveContextReferences(
+  context: string[],
+  options: ResolveContextOptions
+): Promise<Record<string, string>> {
+  const resolved: Record<string, string> = {};
+  const cache = options.cache !== false;
+
+  for (const ref of context) {
+    const resolvedPath = resolveRefPath(ref, options.projectRoot);
+    
+    if (resolvedPath) {
+      try {
+        let content: string | undefined;
+        
+        if (cache && fileCache.has(resolvedPath)) {
+          content = fileCache.get(resolvedPath);
+        } else {
+          const fs = await import('fs/promises');
+          content = await fs.readFile(resolvedPath, 'utf-8');
+          if (cache) {
+            fileCache.set(resolvedPath, content);
+          }
+        }
+        
+        if (content) {
+          resolved[ref] = content;
+        }
+      } catch {
+        resolved[ref] = `[File not found: ${resolvedPath}]`;
+      }
+    }
+  }
+
+  return resolved;
+}
+
+function resolveRefPath(ref: string, projectRoot: string): string | null {
+  if (ref.startsWith('@.')) {
+    const relativePath = ref.substring(2);
+    return `${projectRoot}/${relativePath}`;
+  } else if (ref.startsWith('@')) {
+    const relativePath = ref.substring(1);
+    return `${projectRoot}/${relativePath}`;
+  } else if (ref.startsWith('/')) {
+    return ref;
+  }
+  return `${projectRoot}/${ref}`;
+}
+
+export function clearContextCache(): void {
+  fileCache.clear();
 }
 
 // ============================================================================
@@ -496,9 +685,19 @@ export class PlanParser {
    * (Node.js environment only)
    */
   async parseFile(filePath: string): Promise<ParseResult> {
-    // Dynamic import to avoid issues in browser environments
     const fs = await import('fs/promises');
     const content = await fs.readFile(filePath, 'utf-8');
     return this.parse(content, filePath);
+  }
+
+  /**
+   * Resolve @-references in context and populate contextResolved
+   */
+  async resolveContext(plan: Plan, projectRoot: string): Promise<Plan> {
+    const resolved = await resolveContextReferences(plan.context, { projectRoot });
+    return {
+      ...plan,
+      contextResolved: resolved,
+    };
   }
 }

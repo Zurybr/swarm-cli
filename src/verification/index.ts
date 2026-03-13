@@ -118,6 +118,52 @@ export {
   severityIcons,
 } from './report';
 
+// Fix plan generation (Issue #18)
+export {
+  FixPlanGenerator,
+  createFixPlanGenerator,
+  generateFixPlansFromResults,
+} from './fix-plan';
+
+export type {
+  FixPlan,
+  FixEntry,
+  FixPlanGeneratorOptions,
+} from './fix-plan';
+
+// Verification engines for must_haves (Issue #18)
+export {
+  TruthVerificationEngine,
+  verifyTruths,
+  generateTruthReport,
+} from './truth-engine';
+
+export type {
+  TruthVerificationOptions,
+} from './truth-engine';
+
+export {
+  ArtifactVerificationEngine,
+  verifyArtifacts,
+  generateArtifactReport,
+} from './artifact-engine';
+
+export type {
+  ArtifactVerificationOptions,
+} from './artifact-engine';
+
+export {
+  LinksVerificationEngine,
+  verifyKeyLinks,
+  analyzeImports,
+  buildConnectionGraph,
+  generateKeyLinksReport,
+} from './links-engine';
+
+export type {
+  LinksVerificationOptions,
+} from './links-engine';
+
 // ============================================================================
 // Main VerificationSystem Class
 // ============================================================================

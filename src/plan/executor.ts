@@ -18,6 +18,14 @@ import type {
   ProgressEvent,
 } from './types.js';
 
+import {
+  isAutoModeEnabled,
+  shouldAutoAdvanceCheckpoint,
+  shouldAutoSelectFirst,
+  canAutoApproveHumanAction,
+  getCheckpointTimeout,
+} from '../config/checkpoint-config.js';
+
 // ============================================================================
 // Default Configuration
 // ============================================================================
@@ -179,7 +187,7 @@ async function executeTask(
         taskId: task.id,
         percent: basePercent + 10,
         message: `[DRY RUN] Completed: ${task.name}`,
-        timestamp: result.endTime,
+        timestamp: result.endTime ?? new Date(),
       });
 
       return result;
@@ -197,6 +205,15 @@ async function executeTask(
         break;
       case 'decision':
         output = await executeDecisionTask(task, context);
+        break;
+      case 'checkpoint:human-verify':
+        output = await executeCheckpointHumanVerify(task, context);
+        break;
+      case 'checkpoint:decision':
+        output = await executeCheckpointDecision(task, context);
+        break;
+      case 'checkpoint:human-action':
+        output = await executeCheckpointHumanAction(task, context);
         break;
       default:
         throw new Error(`Unknown task type: ${task.type}`);
@@ -282,6 +299,85 @@ async function executeDecisionTask(
   // Decision tasks require a choice
   // Return the decision context
   return `DECISION REQUIRED: ${task.name}\n\n${task.action}`;
+}
+
+async function executeCheckpointHumanVerify(
+  task: PlanTask,
+  context: ExecutionContext
+): Promise<string> {
+  if (isAutoModeEnabled() && shouldAutoAdvanceCheckpoint()) {
+    return `CHECKPOINT:human-verify (AUTO-APPROVED)\n` +
+      `What: ${task.checkpointData?.whatBuilt || task.name}\n` +
+      `Auto-approved in auto-mode`;
+  }
+
+  const checkpointData = task.checkpointData;
+  return `CHECKPOINT:human-verify\n` +
+    `What: ${checkpointData?.whatBuilt || task.name}\n` +
+    `How to verify: ${checkpointData?.howToVerify || task.done}\n` +
+    `Resume signal: ${checkpointData?.resumeSignal || 'approved, yes, done'}\n` +
+    `Gate: ${checkpointData?.gate || 'blocking'}`;
+}
+
+async function executeCheckpointDecision(
+  task: PlanTask,
+  context: ExecutionContext
+): Promise<string> {
+  const checkpointData = task.checkpointData;
+
+  if (isAutoModeEnabled() && shouldAutoSelectFirst() && checkpointData?.options?.length) {
+    const firstOption = checkpointData.options[0];
+    return `CHECKPOINT:decision (AUTO-SELECTED)\n` +
+      `Question: ${checkpointData?.decision || task.name}\n` +
+      `Auto-selected: ${firstOption.id} - ${firstOption.name}`;
+  }
+
+  let output = `CHECKPOINT:decision\n`;
+  output += `Question: ${checkpointData?.decision || task.name}\n`;
+  output += `Context: ${checkpointData?.context || task.action}\n`;
+  
+  if (checkpointData?.options?.length) {
+    output += `\nOptions:\n`;
+    for (const opt of checkpointData.options) {
+      output += `- ${opt.id}: ${opt.name}\n`;
+      if (opt.pros) output += `  Pros: ${opt.pros}\n`;
+      if (opt.cons) output += `  Cons: ${opt.cons}\n`;
+    }
+  }
+  
+  output += `\nResume signal: Select: <option-id> or ${checkpointData?.resumeSignal || 'approved'}`;
+  return output;
+}
+
+async function executeCheckpointHumanAction(
+  task: PlanTask,
+  context: ExecutionContext
+): Promise<string> {
+  if (isAutoModeEnabled() && !canAutoApproveHumanAction()) {
+    // Security: NEVER auto-approve human-action even in auto-mode
+  }
+
+  const checkpointData = task.checkpointData;
+  let output = `CHECKPOINT:human-action\n`;
+  output += `Action Required: ${checkpointData?.actionRequired || task.name}\n`;
+  output += `Why: ${checkpointData?.why || 'Requires human intervention'}\n`;
+  
+  if (checkpointData?.steps?.length) {
+    output += `\nSteps:\n`;
+    checkpointData.steps.forEach((step, i) => {
+      output += `${i + 1}. ${step}\n`;
+    });
+  }
+  
+  if (checkpointData?.provideSecrets) {
+    output += `\nProvide secrets:\n`;
+    for (const [key] of Object.entries(checkpointData.provideSecrets)) {
+      output += `- ${key}\n`;
+    }
+  }
+  
+  output += `\nResume signal: Paste keys and type "done"`;
+  return output;
 }
 
 // ============================================================================

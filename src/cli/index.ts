@@ -23,7 +23,15 @@ import { createMCPCommand } from './commands/mcp';
 import { createModelCommand } from './commands/model';
 import { createCostsCommand } from '../providers';
 import { launchTUI } from '../tui';
+import { createKanbanCommands } from '../kanban/cli';
+import { createTasksCommand } from './commands/tasks';
 import sqlite3 from 'sqlite3';
+
+import { createConnectCommand, createDisconnectCommand, createLocalCommand, createServerStatusCommand } from './commands/connect';
+import { createPlanCommandRemote } from './commands/plan';
+import { createExecuteCommand } from './commands/run';
+import { createStatusCommand } from './commands/status';
+import { initializeClientContext, getMode } from './client-context';
 
 const logger = new Logger('CLI');
 const program = new Command();
@@ -60,6 +68,7 @@ program
   .name('swarm-cli')
   .description('Orquestación de agentes - Specs a proyectos funcionales')
   .version('0.1.0')
+  .option('--local', 'Force local mode (ignore server config)')
   .option('--retry-attempts <n>', 'Número máximo de reintentos', '3')
   .option('--retry-delay <ms>', 'Delay inicial entre reintentos (ms)', '1000')
   .option('--retry-max-delay <ms>', 'Delay máximo entre reintentos (ms)', '30000')
@@ -231,6 +240,12 @@ program.addCommand(createMCPCommand());
 // Model configuration commands - Issue #22.3
 program.addCommand(createModelCommand());
 
+// Kanban commands - Issue #13
+program.addCommand(createKanbanCommands());
+
+// Tasks commands - Issue #13
+program.addCommand(createTasksCommand());
+
 // Cost tracking commands - Issue #22.6
 program.addCommand(createCostsCommand());
 
@@ -378,9 +393,35 @@ program
     console.log('');
   });
 
+// Client commands - Server connection management
+program.addCommand(createConnectCommand());
+program.addCommand(createDisconnectCommand());
+program.addCommand(createLocalCommand());
+program.addCommand(createServerStatusCommand());
+program.addCommand(createStatusCommand());
+
+// Remote plan commands (overrides local plan for remote mode)
+program.addCommand(createPlanCommandRemote());
+
+// Execute commands (run plans locally or remotely)
+program.addCommand(createExecuteCommand());
+
 // Default to interactive mode
 if (process.argv.length === 2) {
-  interactiveMode();
+  const opts = program.opts();
+  if (opts.local) {
+    initializeClientContext(true);
+    interactiveMode();
+  } else {
+    initializeClientContext();
+    interactiveMode();
+  }
 } else {
+  const opts = program.opts();
+  if (opts.local) {
+    initializeClientContext(true);
+  } else {
+    initializeClientContext();
+  }
   program.parse();
 }

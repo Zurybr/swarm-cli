@@ -496,6 +496,221 @@ export function createStateCommand(): Command {
       }
     });
 
+  // Resume command - resume workflow from last position
+  state
+    .command('resume')
+    .description('Resume workflow from last saved position')
+    .option('-f, --force', 'Force resume without confirmation')
+    .action(async (options) => {
+      try {
+        const manager = createManager(state.opts().file);
+        await manager.init();
+
+        const stateData = await manager.getState();
+        
+        // Find current position
+        const activeSection = stateData.sections.find(s => s.type === 'active');
+        const inProgressItems = activeSection?.items.filter(i => i.status === 'in_progress') || [];
+        
+        if (inProgressItems.length === 0) {
+          console.log(chalk.yellow('No in-progress items found. Nothing to resume.'));
+          console.log(chalk.gray('Use "swarm state list --status in_progress" to see active items.'));
+          return;
+        }
+
+        console.log(chalk.bold('\n📍 Current Position:\n'));
+        
+        for (const item of inProgressItems) {
+          printItem(item);
+        }
+
+        // Show blockers
+        const blockedSection = stateData.sections.find(s => s.type === 'blocked');
+        const blockers = blockedSection?.items || [];
+        
+        if (blockers.length > 0) {
+          console.log(chalk.bold('\n🚫 Blockers:\n'));
+          for (const blocker of blockers) {
+            console.log(`  - ${blocker.title}`);
+            if (blocker.blockedReason) {
+              console.log(chalk.gray(`    Reason: ${blocker.blockedReason}`));
+            }
+          }
+        }
+
+        // Show recent completions
+        const completedSection = stateData.sections.find(s => s.type === 'completed');
+        const recentItems = completedSection?.items.slice(-3) || [];
+        
+        if (recentItems.length > 0) {
+          console.log(chalk.bold('\n✅ Recent Completions:\n'));
+          for (const item of recentItems) {
+            console.log(`  - ${item.title}`);
+          }
+        }
+
+        console.log(chalk.bold('\n🎯 Suggested Next Actions:\n'));
+        
+        // Offer options
+        const { action } = await import('inquirer').then(m =>
+          m.default.prompt([{
+            type: 'list',
+            name: 'action',
+            message: 'What would you like to do?',
+            choices: [
+              { name: 'Continue with in-progress items', value: 'continue' },
+              { name: 'Resolve blockers first', value: 'blockers' },
+              { name: 'View all items', value: 'list' },
+              { name: 'Exit', value: 'exit' },
+            ],
+          }])
+        );
+
+        if (action === 'continue') {
+          console.log(chalk.green('\n✓ Resuming workflow...'));
+        } else if (action === 'blockers') {
+          console.log(chalk.yellow('\n📋 View blockers with: swarm state list --status blocked'));
+        } else if (action === 'list') {
+          console.log(chalk.gray('\nRun: swarm state list'));
+        }
+
+        await manager.close();
+      } catch (error) {
+        console.error(chalk.red(`✗ Failed to resume: ${(error as Error).message}`));
+        process.exit(1);
+      }
+    });
+
+  // Continue command - continue from current position
+  state
+    .command('continue')
+    .alias('cont')
+    .description('Continue workflow, starting next pending item')
+    .action(async () => {
+      try {
+        const manager = createManager(state.opts().file);
+        await manager.init();
+
+        const stateData = await manager.getState();
+        
+        // Find next pending item
+        const activeSection = stateData.sections.find(s => s.type === 'active');
+        const pendingItems = activeSection?.items.filter(i => i.status === 'open') || [];
+        
+        if (pendingItems.length === 0) {
+          console.log(chalk.yellow('No pending items found.'));
+          
+          const inProgressItems = activeSection?.items.filter(i => i.status === 'in_progress') || [];
+          if (inProgressItems.length > 0) {
+            console.log(chalk.gray(`Found ${inProgressItems.length} in-progress item(s).`));
+            console.log(chalk.gray('Use "swarm state resume" to see details.'));
+          }
+          return;
+        }
+
+        // Start the first pending item
+        const nextItem = pendingItems[0];
+        await manager.updateItem(nextItem.id, { 
+          status: 'in_progress',
+          updatedAt: new Date().toISOString(),
+        });
+        await manager.save(await manager.getState());
+
+        console.log(chalk.green(`✓ Continuing with: ${nextItem.title}`));
+        console.log(chalk.gray(`  ID: ${nextItem.id}`));
+        
+        await manager.close();
+      } catch (error) {
+        console.error(chalk.red(`✗ Failed to continue: ${(error as Error).message}`));
+        process.exit(1);
+      }
+    });
+
+  // Checkpoint command - save current state snapshot
+  state
+    .command('checkpoint')
+    .description('Create a checkpoint of current state')
+    .option('-m, --message <msg>', 'Checkpoint message')
+    .action(async (options) => {
+      try {
+        const manager = createManager(state.opts().file);
+        await manager.init();
+
+        const checkpointPath = await manager.backup();
+        
+        console.log(chalk.green(`✓ Checkpoint created: ${checkpointPath}`));
+        
+        if (options.message) {
+          console.log(chalk.gray(`  Message: ${options.message}`));
+        }
+        
+        await manager.close();
+      } catch (error) {
+        console.error(chalk.red(`✗ Failed to create checkpoint: ${(error as Error).message}`));
+        process.exit(1);
+      }
+    });
+
+  // Restore command - restore from a checkpoint
+  state
+    .command('restore')
+    .description('Restore state from a checkpoint')
+    .argument('[backup]', 'Backup file path (omit to list available)')
+    .option('-l, --list', 'List available backups')
+    .action(async (backup, options) => {
+      try {
+        const manager = createManager(state.opts().file);
+        await manager.init();
+
+        if (options.list) {
+          const backups = await manager.listBackups();
+          
+          if (backups.length === 0) {
+            console.log(chalk.yellow('No backups found.'));
+            return;
+          }
+
+          console.log(chalk.bold('\nAvailable Backups:\n'));
+          backups.forEach((b, i) => {
+            const date = b.created.toLocaleString();
+            const size = (b.size / 1024).toFixed(1);
+            console.log(`  ${i + 1}. ${chalk.gray(date)} - ${size}KB`);
+            console.log(`     ${b.path}`);
+          });
+          return;
+        }
+
+        if (!backup) {
+          console.log(chalk.yellow('Specify a backup path or use --list to see available backups.'));
+          console.log(chalk.gray('Usage: swarm state restore <backup-path>'));
+          return;
+        }
+
+        // Confirm restore
+        const { confirm } = await import('inquirer').then(m =>
+          m.default.prompt([{
+            type: 'confirm',
+            name: 'confirm',
+            message: `Restore from ${backup}? This will overwrite current state.`,
+            default: false,
+          }])
+        );
+
+        if (!confirm) {
+          console.log(chalk.gray('Cancelled'));
+          return;
+        }
+
+        await manager.restore(backup);
+        console.log(chalk.green(`✓ Restored from: ${backup}`));
+        
+        await manager.close();
+      } catch (error) {
+        console.error(chalk.red(`✗ Failed to restore: ${(error as Error).message}`));
+        process.exit(1);
+      }
+    });
+
   return state;
 }
 
