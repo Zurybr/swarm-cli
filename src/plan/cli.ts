@@ -13,6 +13,7 @@ import { PlanParser } from './parser';
 import { PlanValidator } from './validator';
 import { PlanExecutor } from './executor';
 import type {
+  Plan,
   PlanExecuteOptions,
   PlanValidateOptions,
   ExecutionContext,
@@ -24,7 +25,18 @@ import type {
 // ANSI Color Helpers (avoid ESM chalk issues)
 // ============================================================================
 
-const colors = {
+interface Colors {
+  red: (text: string) => string;
+  green: (text: string) => string;
+  yellow: (text: string) => string;
+  blue: (text: string) => string;
+  magenta: (text: string) => string;
+  cyan: (text: string) => string;
+  gray: (text: string) => string;
+  bold: (text: string) => string;
+}
+
+const colors: Colors = {
   red: (text: string) => `\x1b[31m${text}\x1b[0m`,
   green: (text: string) => `\x1b[32m${text}\x1b[0m`,
   yellow: (text: string) => `\x1b[33m${text}\x1b[0m`,
@@ -374,10 +386,10 @@ Describe the success criteria for this plan.
 // Output Formatting
 // ============================================================================
 
-function printPlanHumanReadable(plan: ReturnType<PlanParser['parse']> extends Promise<infer R> ? (R extends { plan?: infer P } ? P : never) : never): void {
+function printPlanHumanReadable(plan: Plan): void {
   if (!plan) return;
 
-  console.log(colors.blue.bold(`Plan: ${plan.metadata.phase}-${plan.metadata.plan}`));
+  console.log(colors.bold(colors.blue(`Plan: ${plan.metadata.phase}-${plan.metadata.plan}`)));
   console.log(colors.gray(`Type: ${plan.metadata.type} | Wave: ${plan.metadata.wave} | Autonomous: ${plan.metadata.autonomous}`));
   console.log();
 
@@ -412,7 +424,7 @@ function printPlanHumanReadable(plan: ReturnType<PlanParser['parse']> extends Pr
 }
 
 function printValidationResult(validation: ReturnType<PlanValidator['validate']>): void {
-  console.log(colors.blue.bold('Validation Result'));
+  console.log(colors.bold(colors.blue('Validation Result')));
   console.log();
 
   if (validation.valid) {

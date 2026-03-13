@@ -10,6 +10,22 @@
 // ============================================================================
 
 /**
+ * User setup requirement for external services
+ */
+export interface UserSetup {
+  service: string;
+  why: string;
+  envVars?: Array<{
+    name: string;
+    source: string;
+  }>;
+  dashboardConfig?: Array<{
+    task: string;
+    location: string;
+  }>;
+}
+
+/**
  * Frontmatter metadata parsed from PLAN.md YAML header
  */
 export interface PlanMetadata {
@@ -21,6 +37,7 @@ export interface PlanMetadata {
   files_modified: string[];
   autonomous: boolean;
   requirements: string[];
+  userSetup?: UserSetup[];
 }
 
 /**
@@ -38,7 +55,9 @@ export interface PlanMustHaves {
 export interface ArtifactDefinition {
   path: string;
   provides: string;
-  exports: string[];
+  exports?: string[];
+  minLines?: number;
+  contains?: string;
 }
 
 /**
@@ -48,6 +67,7 @@ export interface KeyLink {
   from: string;
   to: string;
   via: string;
+  pattern?: string;
 }
 
 /**
@@ -64,6 +84,8 @@ export interface Plan {
   executionContext?: string;
   /** Context file references */
   context: string[];
+  /** Resolved context content (for @-references) */
+  contextResolved?: Record<string, string>;
   /** Parsed tasks */
   tasks: PlanTask[];
   /** Verification checklist */
@@ -403,3 +425,152 @@ export interface PlanValidateOptions {
   /** Strict mode (warnings as errors) */
   strict?: boolean;
 }
+
+// ============================================================================
+// JSON Schema Types
+// ============================================================================
+
+/**
+ * JSON Schema for PLAN.md frontmatter validation
+ */
+export const PLAN_FRONTMATTER_JSON_SCHEMA = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object',
+  required: ['phase', 'plan', 'type'],
+  properties: {
+    phase: {
+      type: 'string',
+      pattern: '^[0-9]{2}-[a-z]+$',
+      description: 'Phase identifier (e.g., 01-foundation)',
+    },
+    plan: {
+      type: 'string',
+      pattern: '^[0-9]{2}$',
+      description: 'Plan number within phase (01, 02, etc.)',
+    },
+    type: {
+      type: 'string',
+      enum: ['execute', 'research', 'design', 'tdd'],
+      description: 'Plan execution type',
+    },
+    wave: {
+      type: 'number',
+      minimum: 1,
+      description: 'Execution wave (1, 2, 3...)',
+    },
+    depends_on: {
+      type: 'array',
+      items: {
+        type: 'string',
+        pattern: '^[0-9]{2}-[0-9]{2}$',
+      },
+      description: 'Plan IDs this depends on',
+    },
+    files_modified: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Files this plan will modify',
+    },
+    autonomous: {
+      type: 'boolean',
+      description: 'false if contains checkpoints',
+    },
+    requirements: {
+      type: 'array',
+      items: {
+        type: 'string',
+        pattern: '^REQ-[0-9]+$',
+      },
+      description: 'Requirement IDs from ROADMAP',
+    },
+    user_setup: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['service', 'why'],
+        properties: {
+          service: { type: 'string' },
+          why: { type: 'string' },
+          env_vars: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                source: { type: 'string' },
+              },
+            },
+          },
+          dashboard_config: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                task: { type: 'string' },
+                location: { type: 'string' },
+              },
+            },
+          },
+        },
+      },
+    },
+    must_haves: {
+      type: 'object',
+      properties: {
+        truths: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+        artifacts: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['path', 'provides'],
+            properties: {
+              path: { type: 'string' },
+              provides: { type: 'string' },
+              exports: { type: 'array', items: { type: 'string' } },
+              min_lines: { type: 'number' },
+              contains: { type: 'string' },
+            },
+          },
+        },
+        key_links: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['from', 'to', 'via'],
+            properties: {
+              from: { type: 'string' },
+              to: { type: 'string' },
+              via: { type: 'string' },
+              pattern: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
+/**
+ * JSON Schema for task validation
+ */
+export const PLAN_TASK_JSON_SCHEMA = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object',
+  required: ['name', 'action'],
+  properties: {
+    type: {
+      type: 'string',
+      enum: ['auto', 'manual', 'decision', 'checkpoint:human-verify', 'checkpoint:decision', 'checkpoint:human-action'],
+    },
+    tdd: { type: 'boolean' },
+    name: { type: 'string', minLength: 1 },
+    files: { type: 'array', items: { type: 'string' } },
+    action: { type: 'string', minLength: 1 },
+    verify: { type: 'string' },
+    done: { type: 'string' },
+    behavior: { type: 'array', items: { type: 'string' } },
+  },
+} as const;
