@@ -118,6 +118,19 @@ export {
   severityIcons,
 } from './report';
 
+// Fix plan generation (Issue #18)
+export {
+  FixPlanGenerator,
+  createFixPlanGenerator,
+  generateFixPlansFromResults,
+} from './fix-plan';
+
+export type {
+  FixPlan,
+  FixEntry,
+  FixPlanGeneratorOptions,
+} from './fix-plan';
+
 // ============================================================================
 // Main VerificationSystem Class
 // ============================================================================
