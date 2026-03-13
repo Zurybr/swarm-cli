@@ -10,9 +10,22 @@ import {
   WaveExecutionPlan,
   PlanFrontmatter 
 } from '../types';
+import { StateManager } from './state-manager';
+import { GSDStatus } from './types';
+
+export interface ExecutionHooks {
+  onTaskStart?: (planId: string) => void | Promise<void>;
+  onTaskComplete?: (planId: string, result: any) => void | Promise<void>;
+  onTaskFail?: (planId: string, error: Error) => void | Promise<void>;
+  onPlanComplete?: (planId: string) => void | Promise<void>;
+  onPhaseComplete?: (phaseId: string) => void | Promise<void>;
+  onBlockerEncountered?: (blocker: { planId: string; reason: string }) => void | Promise<void>;
+}
 
 export class WaveExecutor {
   private graph: DependencyGraph = { nodes: [], edges: [], waves: new Map() };
+  private stateManager?: StateManager;
+  private hooks: ExecutionHooks = {};
   
   /**
    * Construye el grafo de dependencias desde planes
@@ -213,6 +226,84 @@ export class WaveExecutor {
       // Todas las dependencias completadas
       return node.dependencies.every(depId => completedPlanIds.includes(depId));
     });
+  }
+
+  /**
+   * Configura el StateManager para auto-actualización
+   */
+  setStateManager(stateManager: StateManager): void {
+    this.stateManager = stateManager;
+  }
+
+  /**
+   * Configura los hooks de ejecución
+   */
+  setHooks(hooks: ExecutionHooks): void {
+    this.hooks = { ...this.hooks, ...hooks };
+  }
+
+  /**
+   * Actualiza el estado automáticamente
+   */
+  private async updateStateOnComplete(planId: string): Promise<void> {
+    if (!this.stateManager) return;
+
+    const [phase, planNum] = planId.split('-');
+    const currentPos = this.stateManager.getState().current_position;
+
+    if (currentPos.current_phase === phase && currentPos.current_plan === planNum) {
+      this.stateManager.updatePosition({
+        current_task: (currentPos.current_task || 0) + 1,
+      });
+    }
+
+    this.stateManager.updateProgress({
+      plans_completed: (this.stateManager.getState().progress_summary.plans_completed || 0) + 1,
+    });
+
+    await this.stateManager.save();
+  }
+
+  /**
+   * Marca un plan como completado en el estado
+   */
+  async markPlanComplete(planId: string): Promise<void> {
+    if (!this.stateManager) return;
+
+    const [phase, plan] = planId.split('-');
+    
+    const completedPlans = this.stateManager.getCompletedPlans();
+    if (!completedPlans.includes(planId)) {
+      this.stateManager.completePhase(phase, [...completedPlans, planId]);
+    }
+
+    await this.updateStateOnComplete(planId);
+    this.hooks.onPlanComplete?.(planId);
+  }
+
+  /**
+   * Registra un blocker en el estado
+   */
+  async addBlocker(planId: string, reason: string): Promise<void> {
+    if (!this.stateManager) return;
+    
+    console.warn(`⚠ Blocker detected for ${planId}: ${reason}`);
+    this.hooks.onBlockerEncountered?.({ planId, reason });
+  }
+
+  /**
+   * Obtiene la posición actual del estado
+   */
+  getCurrentPosition(): { phase: string; plan: string; task: number; status: GSDStatus } | null {
+    if (!this.stateManager) return null;
+    
+    const state = this.stateManager.getState();
+    return {
+      phase: state.current_position.current_phase,
+      plan: state.current_position.current_plan,
+      task: state.current_position.current_task,
+      status: state.current_position.status,
+    };
   }
   
   /**

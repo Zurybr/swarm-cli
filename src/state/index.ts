@@ -635,6 +635,76 @@ export class StateManager {
     this.currentState = null;
     await this.hive.close();
   }
+
+  // ==================== Backup & Restore ====================
+
+  /**
+   * Create a backup of current STATE.md
+   */
+  async backup(customPath?: string): Promise<string> {
+    this.ensureInitialized();
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupPath = customPath || this.config.stateFilePath.replace(/\.md$/, `.backup-${timestamp}.md`);
+
+    try {
+      await fs.copyFile(this.config.stateFilePath, backupPath);
+      return backupPath;
+    } catch (error) {
+      throw new StateManagerError(`Failed to create backup at ${backupPath}`, error as Error);
+    }
+  }
+
+  /**
+   * Restore state from a backup file
+   */
+  async restore(backupPath: string): Promise<void> {
+    this.ensureInitialized();
+
+    try {
+      const content = await fs.readFile(backupPath, 'utf-8');
+      const state = parseState(content);
+      await this.save(state);
+    } catch (error) {
+      throw new StateManagerError(`Failed to restore from ${backupPath}`, error as Error);
+    }
+  }
+
+  /**
+   * List available backups
+   */
+  async listBackups(): Promise<Array<{ path: string; created: Date; size: number }>> {
+    this.ensureInitialized();
+
+    const dir = path.dirname(this.config.stateFilePath);
+    const basename = path.basename(this.config.stateFilePath, '.md');
+
+    try {
+      const files = await fs.readdir(dir);
+      const backupRegex = new RegExp(`^${basename}\\.backup-.+\\.md$`);
+
+      const backups: Array<{ path: string; created: Date; size: number }> = [];
+
+      for (const file of files) {
+        if (backupRegex.test(file)) {
+          const filePath = path.join(dir, file);
+          const stat = await fs.stat(filePath);
+          backups.push({
+            path: filePath,
+            created: stat.mtime,
+            size: stat.size,
+          });
+        }
+      }
+
+      return backups.sort((a, b) => b.created.getTime() - a.created.getTime());
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return [];
+      }
+      throw new StateManagerError('Failed to list backups', error as Error);
+    }
+  }
 }
 
 /**
