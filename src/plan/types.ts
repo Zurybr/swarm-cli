@@ -81,7 +81,7 @@ export interface Plan {
 /**
  * Task execution type
  */
-export type TaskType = 'auto' | 'manual' | 'decision';
+export type TaskType = 'auto' | 'manual' | 'decision' | 'checkpoint:human-verify' | 'checkpoint:decision' | 'checkpoint:human-action';
 
 /**
  * Individual task within a plan
@@ -105,6 +105,25 @@ export interface PlanTask {
   tdd?: boolean;
   /** Expected behavior for TDD tasks */
   behavior?: string[];
+  /** Checkpoint-specific data */
+  checkpointData?: {
+    whatBuilt?: string;
+    howToVerify?: string;
+    resumeSignal?: string;
+    gate?: string;
+    decision?: string;
+    context?: string;
+    options?: Array<{
+      id: string;
+      name: string;
+      pros?: string;
+      cons?: string;
+    }>;
+    actionRequired?: string;
+    why?: string;
+    steps?: string[];
+    provideSecrets?: Record<string, string>;
+  };
 }
 
 // ============================================================================

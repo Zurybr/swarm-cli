@@ -69,6 +69,7 @@ export type {
 export { PlanParser } from './parser';
 export { PlanValidator } from './validator';
 export { PlanExecutor } from './executor';
+export { PromptBuilder, planToPrompt, planToPromptSync } from './prompt';
 export { createPlanCommand } from './cli';
 
 // ============================================================================

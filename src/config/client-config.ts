@@ -8,9 +8,18 @@ export interface ServerConfig {
   token: string;
 }
 
+export interface AutoModeConfig {
+  enabled: boolean;
+  autoAdvance: boolean;
+  autoSelectFirst: boolean;
+  allowAutoSecrets: boolean;
+  timeout: number;
+}
+
 export interface ClientConfig {
   server: ServerConfig | null;
   localMode: boolean;
+  autoMode?: AutoModeConfig;
 }
 
 const GLOBAL_CONFIG_DIR = path.join(os.homedir(), '.swarm');

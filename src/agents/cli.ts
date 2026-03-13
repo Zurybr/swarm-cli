@@ -29,6 +29,7 @@ export function createAgentsCommand(): Command {
   // List agent types
   command
     .command('types')
+    .alias('list')
     .description('List all available agent types')
     .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
     .option('-o, --output-type <type>', 'Output format: str or json', 'str')
@@ -59,6 +60,7 @@ export function createAgentsCommand(): Command {
   // Show agent type details
   command
     .command('describe <type>')
+    .alias('view')
     .description('Show detailed information about an agent type')
     .option('-j, --json', 'Output as JSON (legacy, use --output-type)')
     .option('-o, --output-type <type>', 'Output format: str or json', 'str')
@@ -121,6 +123,7 @@ export function createAgentsCommand(): Command {
   // Create an agent instance
   command
     .command('create <type>')
+    .alias('spawn')
     .description('Create a new agent instance')
     .option('-n, --name <name>', 'Custom name for the agent')
     .option('-c, --config <path>', 'Load agent from YAML config file')
