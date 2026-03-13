@@ -123,6 +123,7 @@ export function createAgentsCommand(): Command {
   // Create an agent instance
   command
     .command('create <type>')
+    .alias('spawn')
     .description('Create a new agent instance')
     .option('-n, --name <name>', 'Custom name for the agent')
     .option('-c, --config <path>', 'Load agent from YAML config file')
