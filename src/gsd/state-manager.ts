@@ -4,6 +4,7 @@
  */
 
 import * as fs from 'fs/promises';
+import * as path from 'path';
 import * as yaml from 'yaml';
 import {
   ProjectState,
@@ -247,5 +248,182 @@ export class StateManager {
    */
   fromJSON(json: string): void {
     this.state = JSON.parse(json);
+  }
+
+  // ==================== Schema Migrations ====================
+
+  /**
+   * Migra el estado a la última versión del schema
+   */
+  async migrate(): Promise<{ migrated: boolean; fromVersion: string; toVersion: string }> {
+    const currentVersion = this.state.metadata.version;
+    const targetVersion = '1.0.0';
+
+    if (currentVersion === targetVersion) {
+      return { migrated: false, fromVersion: currentVersion, toVersion: targetVersion };
+    }
+
+    console.log(`Migrating STATE.md from v${currentVersion} to v${targetVersion}...`);
+
+    if (currentVersion === '0.1.0' || currentVersion.startsWith('0.')) {
+      this.migrateFromV0();
+    }
+
+    this.state.metadata.version = targetVersion;
+    await this.save();
+
+    return { migrated: true, fromVersion: currentVersion, toVersion: targetVersion };
+  }
+
+  /**
+   * Migra desde schema v0 a v1
+   */
+  private migrateFromV0(): void {
+    if (!this.state.completed) {
+      this.state.completed = { phases: [], milestones: [] };
+    }
+
+    if (!this.state.progress_summary) {
+      this.state.progress_summary = {
+        phases_total: 0,
+        phases_completed: 0,
+        plans_total: 0,
+        plans_completed: 0,
+        tasks_total: 0,
+        tasks_completed: 0,
+        overall_progress: 0,
+      };
+    }
+
+    console.log('  - Added progress_summary structure');
+    console.log('  - Added completed structure');
+  }
+
+  // ==================== File Locking (Concurrent Modification) ====================
+
+  private lockFilePath(): string {
+    return this.filePath.replace(/\.md$/, '.lock');
+  }
+
+  /**
+   * Adquiere un lock para el archivo
+   */
+  async acquireLock(timeoutMs: number = 5000): Promise<boolean> {
+    const lockPath = this.lockFilePath();
+    const lockData = {
+      pid: process.pid,
+      timestamp: Date.now(),
+    };
+
+    const startTime = Date.now();
+    while (Date.now() - startTime < timeoutMs) {
+      try {
+        await fs.writeFile(lockPath, JSON.stringify(lockData), { flag: 'wx' });
+        return true;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    throw new Error(`Failed to acquire lock after ${timeoutMs}ms`);
+  }
+
+  /**
+   * Libera el lock del archivo
+   */
+  async releaseLock(): Promise<void> {
+    const lockPath = this.lockFilePath();
+    try {
+      await fs.unlink(lockPath);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw error;
+      }
+    }
+  }
+
+  /**
+   * Verifica si el archivo está bloqueado
+   */
+  async isLocked(): Promise<boolean> {
+    const lockPath = this.lockFilePath();
+    try {
+      await fs.access(lockPath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // ==================== Backup & Restore ====================
+
+  /**
+   * Crea un backup del estado actual
+   */
+  async backup(customPath?: string): Promise<string> {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupPath = customPath || `${this.filePath}.backup-${timestamp}`;
+    
+    await fs.copyFile(this.filePath, backupPath);
+    return backupPath;
+  }
+
+  /**
+   * Restaura el estado desde un backup
+   */
+  async restore(backupPath: string): Promise<void> {
+    const content = await fs.readFile(backupPath, 'utf-8');
+    this.state = this.parseStateMd(content);
+    await this.save();
+  }
+
+  /**
+   * Lista los backups disponibles
+   */
+  async listBackups(): Promise<{ path: string; created: Date; size: number }[]> {
+    const dir = path.dirname(this.filePath);
+    const basename = path.basename(this.filePath);
+    
+    const files = await fs.readdir(dir);
+    const backupRegex = new RegExp(`^${basename}\\.backup-.+$`);
+    
+    const backups: { path: string; created: Date; size: number }[] = [];
+    
+    for (const file of files) {
+      if (backupRegex.test(file)) {
+        const filePath = path.join(dir, file);
+        const stat = await fs.stat(filePath);
+        backups.push({
+          path: filePath,
+          created: stat.mtime,
+          size: stat.size,
+        });
+      }
+    }
+    
+    return backups.sort((a, b) => b.created.getTime() - a.created.getTime());
+  }
+
+  /**
+   * Elimina backups antiguos
+   */
+  async cleanOldBackups(maxAgeDays: number = 30): Promise<number> {
+    const backups = await this.listBackups();
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - maxAgeDays);
+    
+    let deleted = 0;
+    for (const backup of backups) {
+      if (backup.created < cutoffDate) {
+        await fs.unlink(backup.path);
+        deleted++;
+      }
+    }
+    
+    return deleted;
   }
 }
