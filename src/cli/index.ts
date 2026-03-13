@@ -23,6 +23,8 @@ import { createMCPCommand } from './commands/mcp';
 import { createModelCommand } from './commands/model';
 import { createCostsCommand } from '../providers';
 import { launchTUI } from '../tui';
+import { createKanbanCommands } from '../kanban/cli';
+import { createTasksCommand } from './commands/tasks';
 import sqlite3 from 'sqlite3';
 
 import { createConnectCommand, createDisconnectCommand, createLocalCommand, createServerStatusCommand } from './commands/connect';
@@ -237,6 +239,12 @@ program.addCommand(createMCPCommand());
 
 // Model configuration commands - Issue #22.3
 program.addCommand(createModelCommand());
+
+// Kanban commands - Issue #13
+program.addCommand(createKanbanCommands());
+
+// Tasks commands - Issue #13
+program.addCommand(createTasksCommand());
 
 // Cost tracking commands - Issue #22.6
 program.addCommand(createCostsCommand());
