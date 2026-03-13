@@ -391,10 +391,10 @@ function parseTaskAttributes(attributes: string, body: string, index: number): P
 
     switch (key) {
       case 'type':
-        if (['auto', 'manual', 'decision'].includes(value)) {
-          task.type = value as 'auto' | 'manual' | 'decision';
+        if (['auto', 'manual', 'decision'].includes(value) || value.startsWith('checkpoint:')) {
+          task.type = value as PlanTask['type'];
         } else {
-          (task.type as string) = value; // Preserve invalid value for validator to catch
+          (task.type as string) = value;
         }
         break;
       case 'tdd':
@@ -459,6 +459,96 @@ function parseTaskBody(body: string, task: PlanTask): void {
       .filter(b => b.startsWith('- '))
       .map(b => b.substring(2).trim());
   }
+
+  // Parse checkpoint-specific data for checkpoint:* task types
+  if (task.type.startsWith('checkpoint:')) {
+    task.checkpointData = parseCheckpointData(body, task.type);
+  }
+}
+
+function parseCheckpointData(body: string, taskType: string): PlanTask['checkpointData'] {
+  const data: PlanTask['checkpointData'] = {};
+
+  // Common checkpoint fields
+  const whatBuiltMatch = body.match(/<what-built>([\s\S]*?)<\/what-built>/i);
+  if (whatBuiltMatch) {
+    data.whatBuilt = cleanXmlContent(whatBuiltMatch[1]);
+  }
+
+  const howToVerifyMatch = body.match(/<how-to-verify>([\s\S]*?)<\/how-to-verify>/i);
+  if (howToVerifyMatch) {
+    data.howToVerify = cleanXmlContent(howToVerifyMatch[1]);
+  }
+
+  const resumeSignalMatch = body.match(/<resume-signal>([\s\S]*?)<\/resume-signal>/i);
+  if (resumeSignalMatch) {
+    data.resumeSignal = cleanXmlContent(resumeSignalMatch[1]);
+  }
+
+  const gateMatch = body.match(/<gate>([\s\S]*?)<\/gate>/i);
+  if (gateMatch) {
+    data.gate = cleanXmlContent(gateMatch[1]);
+  }
+
+  // checkpoint:decision specific
+  if (taskType === 'checkpoint:decision') {
+    const decisionMatch = body.match(/<decision>([\s\S]*?)<\/decision>/i);
+    if (decisionMatch) {
+      data.decision = cleanXmlContent(decisionMatch[1]);
+    }
+
+    const contextMatch = body.match(/<context>([\s\S]*?)<\/context>/i);
+    if (contextMatch) {
+      data.context = cleanXmlContent(contextMatch[1]);
+    }
+
+    const optionsMatch = body.match(/<options>([\s\S]*?)<\/options>/i);
+    if (optionsMatch) {
+      const optionsContent = optionsMatch[1];
+      const optionMatches = optionsContent.matchAll(/<option\s+id="([^"]+)"[^>]*>([\s\S]*?)<\/option>/gi);
+      data.options = Array.from(optionMatches).map(match => ({
+        id: match[1],
+        name: cleanXmlContent(match[2]),
+      }));
+    }
+  }
+
+  // checkpoint:human-action specific
+  if (taskType === 'checkpoint:human-action') {
+    const actionRequiredMatch = body.match(/<action-required>([\s\S]*?)<\/action-required>/i);
+    if (actionRequiredMatch) {
+      data.actionRequired = cleanXmlContent(actionRequiredMatch[1]);
+    }
+
+    const whyMatch = body.match(/<why>([\s\S]*?)<\/why>/i);
+    if (whyMatch) {
+      data.why = cleanXmlContent(whyMatch[1]);
+    }
+
+    const stepsMatch = body.match(/<steps>([\s\S]*?)<\/steps>/i);
+    if (stepsMatch) {
+      const stepsContent = cleanXmlContent(stepsMatch[1]);
+      data.steps = stepsContent
+        .split('\n')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+    }
+
+    const provideSecretsMatch = body.match(/<provide-secrets>([\s\S]*?)<\/provide-secrets>/i);
+    if (provideSecretsMatch) {
+      const secretsContent = cleanXmlContent(provideSecretsMatch[1]);
+      data.provideSecrets = secretsContent
+        .split('\n')
+        .map(s => s.trim())
+        .filter(s => s.length > 0)
+        .reduce((acc, secret) => {
+          acc[secret] = '';
+          return acc;
+        }, {} as Record<string, string>);
+    }
+  }
+
+  return data;
 }
 
 // ============================================================================
