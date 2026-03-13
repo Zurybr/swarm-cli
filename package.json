@@ -46,6 +46,7 @@
     "@types/ajv": "^0.0.5",
     "@types/express": "^4.17.0",
     "@types/jest": "^29.5.14",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.0",
     "@types/semver": "^7.7.1",
