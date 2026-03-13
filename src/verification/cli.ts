@@ -15,6 +15,7 @@ import {
   valueMustHave,
   structureMustHave,
   relationMustHave,
+  FixPlanGenerator,
 } from './index';
 import type {
   VerifyCommandOptions,
@@ -22,6 +23,7 @@ import type {
   CreateGoalCommandOptions,
   ReportFormat,
   Goal,
+  VerificationResult,
 } from './types';
 
 // ============================================================================
@@ -591,6 +593,148 @@ function createMustHaveCommand(): Command {
 }
 
 // ============================================================================
+// Fix Plan Commands
+// ============================================================================
+
+/**
+ * Create the 'fix-plan' command
+ */
+function createFixPlanCommand(): Command {
+  const fpCmd = new Command('fix-plan')
+    .description('Generate fix plans from verification gaps (Issue #18)')
+    .option('-o, --output <dir>', 'Output directory for fix plans', './.planning/fixes')
+    .option('-p, --phase <name>', 'Phase name for metadata', 'unknown')
+    .option('-f, --format <format>', 'Output format (yaml|json|summary)', 'yaml')
+    .option('--from-results <file>', 'Load verification results from JSON file')
+    .option('--from-goal <goalId>', 'Generate fix plan for a specific goal')
+    .option('--save', 'Save fix plans to files', false)
+    .action(async (options) => {
+      try {
+        const system = getSystem();
+        const generator = new FixPlanGenerator({
+          outputDir: options.output,
+          phase: options.phase,
+        });
+
+        // Cargar resultados desde archivo si se especificó
+        let results: VerificationResult[] = [];
+        if (options.fromResults) {
+          const content = await fs.readFile(options.fromResults, 'utf-8');
+          results = JSON.parse(content);
+        } else if (options.fromGoal) {
+          const result = await system.verify(options.fromGoal);
+          results = [result];
+        } else {
+          // Verificar todos los goals
+          results = await system.verifyAll();
+        }
+
+        // Generar fix plans
+        const fixPlans = generator.generateFixPlans(results);
+
+        if (fixPlans.length === 0) {
+          console.log(colors.green('✅ No gaps found! No fix plans needed.'));
+          return;
+        }
+
+        // Mostrar resumen
+        console.log(colors.bold('\n📋 Fix Plans Summary\n'));
+        console.log(`Total Plans: ${fixPlans.length}`);
+        console.log(`Total Fixes: ${fixPlans.reduce((sum, p) => sum + p.fixes.length, 0)}`);
+        
+        const summary = generator.generateSummary(fixPlans);
+        console.log('\n' + summary);
+
+        // Guardar o mostrar según formato
+        if (options.save) {
+          const savedPaths = await generator.saveFixPlans(fixPlans, options.output);
+          console.log(colors.green(`\n✅ Saved ${savedPaths.length} fix plan(s) to ${options.output}`));
+          for (const p of savedPaths) {
+            console.log(colors.gray(`   - ${p}`));
+          }
+        } else {
+          // Mostrar en consola
+          console.log(colors.bold('\n📄 Fix Plans:\n'));
+          for (const plan of fixPlans) {
+            if (options.format === 'yaml') {
+              console.log(generator.exportToYAML(plan));
+            } else if (options.format === 'json') {
+              console.log(JSON.stringify(plan, null, 2));
+            }
+          }
+        }
+      } catch (error) {
+        console.error(colors.red(`Error: ${(error as Error).message}`));
+        process.exit(1);
+      }
+    });
+
+  // Subcomando para generar fix plan consolidado
+  fpCmd
+    .command('consolidated')
+    .description('Generate a single consolidated fix plan')
+    .argument('<gaps-file>', 'JSON file with gaps array')
+    .option('-o, --output <file>', 'Output file path')
+    .option('-p, --phase <name>', 'Phase name', 'unknown')
+    .option('--goal-id <id>', 'Goal ID for metadata')
+    .action(async (gapsFile, options) => {
+      try {
+        const content = await fs.readFile(gapsFile, 'utf-8');
+        const gaps = JSON.parse(content);
+
+        const generator = new FixPlanGenerator({
+          phase: options.phase,
+        });
+
+        const fixPlan = generator.generateConsolidatedFixPlan(
+          gaps,
+          options.goalId,
+          'consolidated-fix'
+        );
+
+        const yaml = generator.exportToYAML(fixPlan);
+
+        if (options.output) {
+          await fs.writeFile(options.output, yaml, 'utf-8');
+          console.log(colors.green(`✅ Saved consolidated fix plan to ${options.output}`));
+        } else {
+          console.log(yaml);
+        }
+      } catch (error) {
+        console.error(colors.red(`Error: ${(error as Error).message}`));
+        process.exit(1);
+      }
+    });
+
+  // Subcomando para estimar esfuerzo
+  fpCmd
+    .command('estimate')
+    .description('Estimate effort for fix plans')
+    .argument('<results-file>', 'JSON file with verification results')
+    .action(async (resultsFile) => {
+      try {
+        const content = await fs.readFile(resultsFile, 'utf-8');
+        const results = JSON.parse(content);
+
+        const generator = new FixPlanGenerator();
+        const fixPlans = generator.generateFixPlans(results);
+        const effort = generator.estimateTotalEffort(fixPlans);
+
+        console.log(colors.bold('\n📊 Effort Estimate\n'));
+        console.log(`Total Fix Plans: ${fixPlans.length}`);
+        console.log(`Total Fixes: ${fixPlans.reduce((sum, p) => sum + p.fixes.length, 0)}`);
+        console.log(colors.yellow(`\nEstimated Effort: ${effort} hours`));
+        console.log(colors.gray(`  (Based on priority-based weighting)`));
+      } catch (error) {
+        console.error(colors.red(`Error: ${(error as Error).message}`));
+        process.exit(1);
+      }
+    });
+
+  return fpCmd;
+}
+
+// ============================================================================
 // Main Export
 // ============================================================================
 
@@ -598,7 +742,12 @@ function createMustHaveCommand(): Command {
  * Create all verification-related CLI commands
  */
 export function createVerificationCommands(): Command[] {
-  return [createVerifyCommand(), createGoalsCommand(), createMustHaveCommand()];
+  return [
+    createVerifyCommand(),
+    createGoalsCommand(),
+    createMustHaveCommand(),
+    createFixPlanCommand(),
+  ];
 }
 
 /**
@@ -611,4 +760,4 @@ export function registerVerificationCommands(program: Command): void {
   }
 }
 
-export { createVerifyCommand, createGoalsCommand, createMustHaveCommand };
+export { createVerifyCommand, createGoalsCommand, createMustHaveCommand, createFixPlanCommand };

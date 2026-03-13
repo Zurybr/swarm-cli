@@ -60,6 +60,18 @@ export interface KeyLink {
   pattern: string;
 }
 
+// Re-export verification schema types from Issue #18
+export {
+  Truth,
+  Artifact as VerificationArtifact,
+  KeyLink as VerificationKeyLink,
+  MustHaves as VerificationMustHaves,
+  TruthVerificationResult,
+  ArtifactVerificationResult,
+  KeyLinkVerificationResult,
+  MustHavesVerificationResult,
+} from './verification-schema';
+
 export interface PlanTask {
   type: 'auto' | 'checkpoint';
   name: string;
