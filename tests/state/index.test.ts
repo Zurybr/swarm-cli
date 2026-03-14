@@ -32,13 +32,13 @@ describe('StateManager', () => {
   describe('init', () => {
     it('should initialize successfully', async () => {
       const newManager = new StateManager({ stateFilePath });
-      await expect(newManager.init()).resolves.not.toThrow();
+      await expect(newManager.init()).resolves.toBeUndefined();
       await newManager.close();
     });
 
     it('should be idempotent', async () => {
       await manager.init();
-      await expect(manager.init()).resolves.not.toThrow();
+      await expect(manager.init()).resolves.toBeUndefined();
     });
   });
 
