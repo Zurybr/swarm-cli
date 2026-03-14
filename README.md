@@ -663,10 +663,10 @@ Estudio de red-teaming exploratorio sobre agentes autónomos con memoria persist
 
 ### Documentación Interna
 
-- [Arquitectura Backend](docs/architecture/backend.md)
+- [Arquitectura Backend](docs/architecture/project-structure.md)
 - [Diagramas (Excalidraw)](docs/architecture/diagrams/)
 - [Plan de Implementación](docs/plans/)
-- [API Reference](docs/api.md)
+- [API Reference](docs/api/quick-reference.md)
 
 ---
 
