@@ -438,6 +438,14 @@ export interface CycleStatistics {
   fastestCycle: number;
   /** Slowest cycle (ms) */
   slowestCycle: number;
+  /** Average red phase duration (ms) */
+  averageRedTime: number;
+  /** Average green phase duration (ms) */
+  averageGreenTime: number;
+  /** Average refactor phase duration (ms) */
+  averageRefactorTime: number;
+  /** Total number of cycles analyzed */
+  totalCycles: number;
 }
 
 // ============================================================================

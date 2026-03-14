@@ -86,7 +86,8 @@ export class Orchestrator extends EventEmitter {
     const agentConfig: AgentConfig = {
       id: `agent-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       runId,
-      role: agencyAgent.role,
+      // Fallback to the agent's defined role or its specialty if role is absent
+      role: (agencyAgent as any).role ?? agencyAgent.specialty ?? 'unknown',
       model: modelConfig.model,
       apiUrl: modelConfig.apiUrl,
       apiKey: modelConfig.apiKey,
@@ -105,8 +106,9 @@ export class Orchestrator extends EventEmitter {
     run.agents.push(agent.getId());
     run.updatedAt = new Date();
     
+    const agentRole = (agencyAgent as any).role ?? (agencyAgent as any).specialty ?? 'unknown';
     logger.info(`Spawned agent ${agent.getId()} (${agencyAgent.name}) for run ${runId}`);
-    this.emit('agent:spawned', { runId, agentId: agent.getId(), role: agencyAgent.role });
+    this.emit('agent:spawned', { runId, agentId: agent.getId(), role: agentRole });
     
     return agent;
   }

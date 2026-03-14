@@ -15,6 +15,8 @@ export interface AgencyAgent {
   successMetrics: string[];
   triggers: string[];
   isDefault?: boolean;
+  // Optional explicit role identifier (fallback to specialty if not provided)
+  role?: string;
 }
 
 export interface AgentDivision {
